@@ -1,2 +1,2 @@
-# async-methods
-Efficiecy wrapper for chaining async- and sync- processes using generators
+# async-methods (AM)
+## Efficiecy wrapper for chaining async- and sync- processes using generators
