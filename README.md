@@ -16,7 +16,7 @@ am([3, 4, 5])
 ##### 1. Harnessing the flexibity of ES6 generators
 **am** is a function that can wrap arrays, objects, generators, promises and other entities, always returning a generator.  The generator ('amGen') has extra set of methods which allow asynchronous operations to be intuitively chained.  
 
-#####2. Mix sync and async operations
+##### 2. Mix sync and async operations
 Most methods accept either a generator whish can host a sequence of async operations using **yield** or a normal function which will have same function but oeprate synchronously.
 
 In this way syncronous operations of mapping, filtering etc can be combined with asynchronous mapping and filtering operations.
@@ -30,7 +30,7 @@ apply to **am** methods
 - The end result of the operations of the chain is a promise accessed by .then().
 - **co(amGen)** will always return a Promise.
 
-#####4.  Replace async module with simpler ES6 patterns
+##### 4.  Replace async module with simpler ES6 patterns
  
 ## Installation
 In package.json
@@ -49,7 +49,7 @@ In code
 ```
 	let am=require('async-methods');
 ```
-##Wrapping
+## Wrapping
 
 *Normal entities*
 
