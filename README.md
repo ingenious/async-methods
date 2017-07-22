@@ -73,50 +73,50 @@ In code
 
 **am(amGen)** => identity
 
-##Methods
+## Methods
 
 > In all cases **fn** can be a **generator** or a normal function (for analagous synchronous operation)
 
 *Returning a chainable generator*
-###.map(fn)
+### .map(fn)
 
 
-###.filter(fn)
+### .filter(fn)
 
 
-###.mapFilter(fn)
+### .mapFilter(fn)
 
-###.forEach(fn)
+### .forEach(fn)
 
-###.next(Fn)
+### .next(Fn)
 
-###.timeout(ms)
-###.wait(ms)
+### .timeout(ms)
+### .wait(ms)
 
-###.log()
+### .log()
 
-###.error(fn)
+### .error(fn)
 
 *Returning a Promise (chainable as Promise)*
-###.co(fn)
-###.promise() 
+### .co(fn)
+### .promise() 
 -	*Alias for .co()*
 
-###.then(fn)
-###.catch(fn)
+### .then(fn)
+### .catch(fn)
 
-##Extensions 
+## Extensions 
 
 >All extension methods return a chainable generator (*amGen*)
 
 *async module replacement*
 
-####am.waterfall([&lt;am-able>,&lt;am-able>,..])
+#### am.waterfall([&lt;am-able>,&lt;am-able>,..])
 
 *Promise method equivalents*
 
-####am.all([&lt;am-able>,&lt;am-able>,..])
-####am.resolve(value)
-####am.reject(err)
+#### am.all([&lt;am-able>,&lt;am-able>,..])
+#### am.resolve(value)
+#### am.reject(err)
 
 
