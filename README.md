@@ -3,12 +3,12 @@
 
 ```
 
-am([3, 4, 5])
-  	.filter(function* (elem, i) {
-    	return yield Promise.resolve(4 * i > elem);
-}).log();
+	am([3, 4, 5])
+  		.filter(function* (elem, i) {
+    		return yield Promise.resolve(4 * i > elem);
+	}).log();
   	
-// 5
+	// 5
   	
 ```
 ## How it works
@@ -22,7 +22,7 @@ Most methods accept either a generator whish can host a sequence of async operat
 In this way syncronous operations of mapping, filtering etc can be combined with asynchronous mapping and filtering operations.
 
 ##### 3. Co is used to convert every generator chain to a promise
-The **amGen** generators are interpreted with **co( )** so the same rules that oapply to **co(function*(){ })** 
+The **amGen** generators are interpreted with **co( )** so the same rules that oapply to **co(function&lowast;(){ })** 
 apply to **am** methods
 
 - yield arguments can be generators, promises **or**  functions with a single callback.
