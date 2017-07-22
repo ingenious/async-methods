@@ -88,7 +88,7 @@ In code
 
 ### .forEach(fn)
 
-### .next(Fn)
+### .next(fn)
 
 ### .timeout(ms)
 ### .wait(ms)
@@ -98,7 +98,7 @@ In code
 ### .error(fn)
 
 *Returning a Promise (chainable as Promise)*
-### .co(fn)
+### .co()
 ### .promise() 
 -	*Alias for .co()*
 
