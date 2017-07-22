@@ -27,7 +27,14 @@ let AM, am, methods = {},
     resolve: function (value) {
       return new AM(Promise.resolve(value));
     },
+    forEach: function (array, fn) {
 
+      let asyncList = [];
+      array.forEach(function (value) {
+        asyncList.push(am(fn, value));
+      });
+      return am.parallel(asyncList);
+    },
     waterfall: function (list) {
       let self = this,
         response;

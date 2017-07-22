@@ -112,6 +112,10 @@ In code
 *async module replacement*
 
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
+#### am.parallel([&lt;am-able>,&lt;am-able>,..])
+#### am.forEach([&lt;am-able>,&lt;am-able>,..])
+
+
 
 *Promise method equivalents*
 

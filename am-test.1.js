@@ -56,3 +56,8 @@ am([3, 4, 5])
   .filter(function* (elem, i) {
     return yield Promise.resolve(4 * i > elem);
   }).log();
+
+
+am.forEach([3, 4, 5], function (value, cb) {
+  cb(null, 2 * value);
+}).log();
