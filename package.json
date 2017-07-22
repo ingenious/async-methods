@@ -17,7 +17,8 @@
         "fs-extra": ">=0.23.1",
         "express": ">=4.0.0",
         "underscore": ">=1.8.3",
-        "request": ">=2.55"
+        "request": ">=2.55",
+        "async-methods": "ingenious/async-methods"
     },
     "readmeFilename": "README.md",
     "jshintConfig": {
