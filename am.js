@@ -1,5 +1,6 @@
 'use strict';
 
+// To come:
 // .if(fn,fn) or .if(fn).next() .elseif(fn,fn) or .elseif(fn).next() .else(fn) or .else().next()  .while(fn,fn) or .while(fn).next()
 // .do(fn) .. until(fn)  .interval(fn,n)  or interval(n)
 // .extend()  .clone()  .repeat(fn,n)  .pickBy()
