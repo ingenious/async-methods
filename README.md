@@ -3,9 +3,11 @@
 
 ```
 
-	am([3, 4, 5])
-  		.filter(function* (elem, i) {
+	am([3, 4, 5]).filter(function* (elem, i) {
+	
+			// yielded async operation
     		return yield Promise.resolve(4 * i > elem);
+	
 	}).log();
   	
 	// 5
