@@ -60,4 +60,6 @@ am([3, 4, 5])
 
 am.forEach([3, 4, 5], function (value, cb) {
   cb(null, 2 * value);
-}).log();
+}).log('forEach test result');
+
+// ​​​​​forEach test result (3ms)  [ 6, 8, 10 ]​​​​​

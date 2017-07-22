@@ -63,13 +63,13 @@ In code
 
 *Entities with asynchronous returns*
 
-**am(function(&lt;args&gt;, callback){ ... })** => generator that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
+**am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)** => generator that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
 **am(generator)**  => returns version of the generator with  chainable **amGen** methods attached
 
 **am(&lt;Promise&gt;)**  => generator that returns the Promise resolved-value and passes any **err** to a **.error(fn)**  or **.catch(fn)** at end of the chain
 
-**am.sfFn(function(<args>,successFn, errorFn)** => generator that returns arguments of the success callback and passes and argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
+**am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)** => generator that returns arguments of the success callback and passes and argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
 **am(amGen)** => identity
 
@@ -113,7 +113,8 @@ In code
 
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
 #### am.parallel([&lt;am-able>,&lt;am-able>,..])
-#### am.forEach([&lt;am-able>,&lt;am-able>,..])
+#### am.forEach(array,fn) 
+where fn is a function that accepts a callback
 
 
 
