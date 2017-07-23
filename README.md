@@ -83,9 +83,7 @@ In code
 *Returning a chainable generator*
 ### .map(fn,tolerant)
 
-
 ### .filter(fn, tolerant)
-
 
 ### .mapFilter(fn, tolerant)
 
