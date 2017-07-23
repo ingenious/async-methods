@@ -67,7 +67,7 @@ am(am(anArray))
 // am a generator
 am(function* () {
   return yield Promise.resolve(34);
-}).log('OK?').then(function (result) {
+}).log(Error(), '70').then(function (result) {
   console.log(74, result);
 }).catch(function (err) {
   console.log(76, 'Generator errors with', err);

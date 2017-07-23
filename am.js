@@ -4,6 +4,8 @@
 // .if(fn,fn) or .if(fn).next() .elseif(fn,fn) or .elseif(fn).next() .else(fn) or .else().next()  .while(fn,fn) or .while(fn).next()
 // .do(fn) .. until(fn)  .interval(fn,n)  or interval(n)
 // .extend()  .clone()  .repeat(fn,n)  .pickBy()
+// .toJSON  .toObject .toString()?
+// sync attribute : true|false?
 let AM, am, methods = {},
   co = require('co'),
   amExtensions = {
@@ -92,25 +94,50 @@ let AM, am, methods = {},
         }, ms);
       }]);
     },
-    log: function (label, errorLabel) {
+    log: function (label, errorLabel, errorObject) {
+      let lineNumber, file, filepath, stack;
+      if (label instanceof Error) {
+        errorObject = label;
+        label = '';
+      }
+      if (errorLabel instanceof Error) {
+        errorObject = errorLabel;
+        label = '';
+      }
+      if (errorObject) {
+        stack = errorObject.stack.split('\n');
+        lineNumber = stack[1].split(':')[1];
+        filepath = stack[1].split(':')[0].split('/');
+        file = filepath.slice(-2).join('/');
+      }
       label = (label !== null) ? (label || 'Result: ') : '';
       errorLabel = (label !== null) ? (errorLabel || 'error: ') : '';
       let amGen = this;
       return methods.chainGenerators.apply(amGen, [function (err, lastResult, resolve, reject) {
         if (err) {
+          if (err instanceof Error) {
+            errorObject = err;
+
+          }
+          if (errorObject) {
+            stack = errorObject.stack.split('\n');
+            lineNumber = stack[1].split(':')[1];
+            filepath = stack[1].split(':')[0].split('/');
+            file = filepath.slice(-2).join('/');
+          }
           if (errorLabel) {
-            console.log(errorLabel, '(' + (+new Date() - amGen.prototype._state_.timer) + 'ms) ', err);
+            console.log((lineNumber ? '[line ' + lineNumber + (file ? ' in ' + file : '') + ']' : ''), errorLabel, '(' + (+new Date() - amGen.prototype._state_.timer) + 'ms) ', err);
           } else {
-            console.log(err);
+            console.log((lineNumber ? '[line ' + lineNumber + (file ? ' in ' + file : '') + ']' : ''), err);
           }
           amGen.prototype._state_.rejectsWith = err;
           reject(err);
         } else {
           amGen.prototype._state_.resolvesTo = lastResult;
           if (label) {
-            console.log(label, '(' + (+new Date() - amGen.prototype._state_.timer) + 'ms) ', lastResult);
+            console.log((lineNumber ? '[line ' + lineNumber + (file ? ' in ' + file : '') + ']' : '') + '[in ' + (+new Date() - amGen.prototype._state_.timer) + 'ms] ' + label, lastResult);
           } else {
-            console.log(lastResult);
+            console.log((lineNumber ? '[line ' + lineNumber + (file ? ' in ' + file : '') + ']' : ''), lastResult);
           }
           resolve(lastResult);
         }
@@ -206,6 +233,7 @@ let AM, am, methods = {},
         }
       }]);
     },
+
     forEach: function (fn) {
       let amGen = this;
       return methods.chainGenerators.apply(amGen, [function (err, lastResult, resolve, reject) {
@@ -614,10 +642,11 @@ methods = {
     return amGen;
   }
 };
-AM = function (initial, args) {
+AM = function (initial) {
 
   // convert various object types to an async-methods-generator
-  let amGen, _state_ = this;
+  let amGen, _state_ = this,
+    args = arguments[1] || [];
   _state_.index = 1;
   _state_.timer = +new Date();
 
@@ -630,7 +659,13 @@ AM = function (initial, args) {
     }
 
     // Other generator
-    amGen = initial;
+    if (!args.length) {
+      amGen = initial;
+    } else {
+      amGen = function* () {
+        return yield initial.apply(_state_, args);
+      }
+    }
 
     // Iterator  
   } else if (typeof initial === 'object') {

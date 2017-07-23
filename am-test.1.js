@@ -1,7 +1,9 @@
 'use strict';
 
 
-let am = require('./am.js');
+let // co = require('co'),
+  am = require('./am.js');
+
 
 
 // fs = require('fs-extra'),
@@ -28,7 +30,8 @@ am(anObject).forEach(function* (elem) {
 
   // sync
   return elem.toString() + attr;
-}).log();
+}).log(Error());
+
 
 am(anArray).forEach(function* (elem, i) {
 
@@ -60,6 +63,10 @@ am([3, 4, 5])
 
 am.forEach([3, 4, 5], function (value, cb) {
   cb(null, 2 * value);
-}).log('forEach test result');
+}).log('sync forEach test result');
 
 // ​​​​​forEach test result (3ms)  [ 6, 8, 10 ]​​​​​
+
+am.forEach([3, 4, 5], function* (value) {
+  return yield Promise.resolve(2 * value);
+}).log('async forEach test result');
