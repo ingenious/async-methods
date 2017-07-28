@@ -322,23 +322,23 @@ let AM, am, methods = {},
 
                 // object
                 newResult = {};
-                i = 0;
                 for (attr in lastResult) {
                   result = fn.apply(amGen, [lastResult[attr], attr, lastResult]);
-                  if (result) {
+                  if (result || result === undefined) {
                     newResult[attr] = result;
                   }
                 }
               } else if (Array.isArray(lastResult)) {
 
                 // array
-                newResult = [];
-                lastResult.map(function () {
-                  return fn.apply(amGen, arguments);
+                newResult = lastResult.map(function () {
+                  result = fn.apply(amGen, arguments)
+                  return result === undefined ? arguments[0] : result;
                 }).filter(function (item) {
                   return item ? true : false;
                 });
               } else {
+                newResult = null;
                 result = fn.apply(amGen, [lastResult, 0, [lastResult]]);
                 // other
                 if (result) {
@@ -415,7 +415,7 @@ let AM, am, methods = {},
       let amGen = this,
         newResult;
       return methods.chainGenerators.apply(amGen, [function (err, lastResult, resolve, reject) {
-        let i, attr;
+        let i, attr, result;
         if (err) {
           amGen.prototype._state_.rejectsWith = err;
           reject(err);
@@ -428,23 +428,26 @@ let AM, am, methods = {},
 
                 // object
                 newResult = {};
-                i = 0;
+
                 for (attr in lastResult) {
-                  if (fn.apply(amGen, [lastResult[attr], attr, lastResult])) {
+                  result = fn.apply(amGen, [lastResult[attr], attr, lastResult]);
+                  if (result || result === undefined) {
                     newResult[attr] = lastResult[attr];
                   }
                 }
               } else if (Array.isArray(lastResult)) {
 
                 // array
-                newResult = [];
-                lastResult.filter(function () {
-                  return fn.apply(amGen, arguments);
+                newResult = lastResult.filter(function () {
+                  result = fn.apply(amGen, arguments);
+                  return result || result === undefined;;
                 });
               } else {
                 newResult = null;
+
                 // other
-                if (fn.apply(amGen, [lastResult, 0, [lastResult]])) {
+                result = fn.apply(amGen, [lastResult, 0, [lastResult]]);
+                if (result || result === undefined) {
                   newResult = lastResult;
                 }
               }
@@ -511,7 +514,8 @@ let AM, am, methods = {},
 
     },
     map: function (fn, tolerant) {
-      let amGen = this;
+      let amGen = this,
+        result;
       return methods.chainGenerators.apply(amGen, [function (err, lastResult, resolve, reject) {
         let i, attr, newResult;
         if (err) {
@@ -528,14 +532,15 @@ let AM, am, methods = {},
                 newResult = {};
                 i = 0;
                 for (attr in lastResult) {
-                  newResult[attr] = fn.apply(amGen, [lastResult[attr], attr, lastResult]);
+                  result = fn.apply(amGen, [lastResult[attr], attr, lastResult]);
+                  newResult[attr] = result === undefined ? lastResult[attr] : result;
                 }
               } else if (Array.isArray(lastResult)) {
 
                 // array
-                newResult = [];
-                lastResult.map(function () {
-                  return fn.apply(amGen, arguments);
+                newResult = lastResult.map(function () {
+                  let result = fn.apply(amGen, arguments);
+                  return result === undefined ? arguments[0] : result;
                 });
               } else {
 
