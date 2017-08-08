@@ -4,16 +4,13 @@
 
 
 let am = require('./am.js'),
-
-
   fs = require('fs-extra'),
-
   timer = +new Date();
 let anArray = [2, 3, 6];
 
 // am a function with callback
 am(fs.readFile, __dirname + '/am.js')
-  .co()
+  .promise()
   .then(function (content) {
     console.log(9, content.toString().substr(-5));
   }).catch(function (err) {

@@ -5,21 +5,13 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/ingenious/async-methods.git"
   },
-  "description": "Wrapper for chainng async- and sync- processes using generators",
-  "version": "0.0.1",
+  "description": "Wrapper for chaining asyncronous and syncronous processes in javascript",
+  "version": "0.0.2",
   "main": "am.js",
-  "dependencies": {
-    "co": "^4.6.0"
-  },
-  "devDependencies": {
-    "fs-extra": ">=0.23.1",
-    "express": ">=4.0.0",
-    "underscore": ">=1.8.3",
-    "request": ">=2.55",
-    "async-methods": "ingenious/async-methods"
-  },
+  "dependencies": {},
+  "devDependencies": {},
   "readmeFilename": "README.md",
   "jshintConfig": {
     "bitwise": true,
