@@ -121,9 +121,13 @@ class AM extends Promise {
         } else if (am.isGenerator(fn) && (am.isArray(result) || am.isObject(result))) {
 
           // 4,5. object or array in (asynchronous)
-          am.filter(result, fn, tolerant, mapFilter).then(function () {
+          if (result.length || (am.isObject(result) && Object.keys(result).length)) {
+            am.filter(result, fn, tolerant, mapFilter).then(function () {
+              resolve(result);
+            }).catch(reject);
+          } else {
             resolve(result);
-          }).catch(reject);
+          }
 
         } else if (am.isGenerator(fn)) {
           mapped = fn.apply(self, [result, 0, [result]]);
@@ -737,7 +741,11 @@ am.filter = function (initial, fn, tolerant, mapFilter) {
       list[i] = initial[i];
     }
   }
-  return iterate(am(fn(list[keys[0]])), 0);
+  if (keys.length) {
+    return iterate(am(fn(list[keys[0]])), 0);
+  } else {
+    return am(initial);
+  }
 };
 
 // iterate a list of sync and async data object members in sequence
