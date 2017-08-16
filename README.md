@@ -55,9 +55,8 @@ In code
 
 **am([3,4,5])** => Extended Promise that returns an array.
 
+synchronous
 ```
-   // synchronous
-   
    am([3, 4, 5]).mapFilter(function (value, i) {
 
      return 2 * value + i;
@@ -65,8 +64,10 @@ In code
    }).log('array wrapper);
 
    //  array wrapper [15ms] [ 6, 9, 12 ]​​​​​
+```
+asynchronous
 
-   //  asynchronous
+```
 
    am([33, 4, 555]).wait(200).filter(function* (value) {
    
@@ -75,7 +76,8 @@ In code
    }).log('filter asyncronous,');
 
    // ​​​​​filter asyncronous, [204ms] [ 33,  555 ]​​​​​
-
+```
+```
    am(4).timeout(200).filter(function* (value) {
    
       return yield am.resolve(4 - value);
@@ -88,12 +90,13 @@ In code
 **am({a:3})** => Extended Promise that returns an object.
 
 ```
-   am({ a: 34, b: 56, c: 78
-}).forEach(function (value, attr) {
+   am({ a: 34, b: 56, c: 78})
+   
+   .forEach(function (value, attr) {
 
-  console.log(value, attr);
+       console.log(value, attr);// a 34 b 56 c 78
 
-}).log();
+    }).log();
 
 ```
 
