@@ -77,13 +77,14 @@ am(7).forEach(function* (value, i) {
   console.log(yield value, i);
 }).log('non object');
 
-am([3, 4, 5]).filter(function (value) {
-  return 4 - value;
+am([3, 4, 5]).filter(function* (value) {
+  return yield(4 - value);
 }).log('filter syncronous, 799');
 
-am([33, 4, 555]).filter(function* (value) {
+am([33, 4, 555]).timeout(200).filter(function* (value) {
   return yield am.resolve(4 - value);
 }).log('filter asyncronous, 807');
+
 am(7).filter(function (value) {
   return 7 - value;
 }).log(810);

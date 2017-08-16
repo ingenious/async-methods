@@ -208,8 +208,8 @@ class AM extends Promise {
         } else if (am.isGenerator(fn) && (am.isArray(result) || am.isObject(result))) {
 
           // 4,5. object or array in (asynchronous)
-          am.filter(result, fn, tolerant).then(function () {
-            resolve(result);
+          am.filter(result, fn, tolerant).then(function (newResult) {
+            resolve(newResult);
           }).catch(reject);
 
         } else if (am.isGenerator(fn)) {
@@ -691,24 +691,32 @@ am.forEach = function (initial, tolerant) {
 };
 
 am.filter = function (initial, fn, tolerant, mapFilter) {
-  let keys = [],
+  let newResult, keys = [],
     list,
     response,
     iterate = function (_am, index) {
-
       if (index < keys.length) {
         return _am.then(function (result) {
+
+          // if the result of the async operation returns a truthy response
+          // include original element except if mapFilter include new result
           if (result && am.isArray(response)) {
             response.push(mapFilter ? result : initial[keys[index]]);
           } else if (result) {
+
+            // object
             response[keys[index]] = mapFilter ? result : initial[keys[index]];
           }
+
+          // iterate or return until all elements processed
           if (index < keys.length - 1) {
             return iterate(am(fn(list[keys[++index]])), index);
           } else {
             return Promise.resolve(response);
           }
         }).catch(function (err) {
+
+          // if tolerant specified, on error continue iteration to end
           if (!tolerant) {
             return Promise.reject(err);
           } else {
@@ -723,10 +731,15 @@ am.filter = function (initial, fn, tolerant, mapFilter) {
         return am.resolve(response);
       }
     };
+
+  // if not object or array return promise 
   if (!am.isObject(initial) && !am.isArray(initial)) {
-    return am(fn(initial));
-  }
-  if (am.isObject(initial)) {
+    return am(fn(initial)).next(function (newResult) {
+
+      return am(newResult ? (mapFilter ? newResult : initial) : null);
+
+    });
+  } else if (am.isObject(initial)) {
     list = {};
     response = {};
     for (var attr in initial) {
