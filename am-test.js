@@ -10,12 +10,10 @@ let anArray = [2, 3, 6];
 
 // am a function with callback
 am(fs.readFile, __dirname + '/am.js')
-  .promise()
+
   .then(function (content) {
-    console.log(9, content.toString().substr(-5));
-  }).catch(function (err) {
-    console.log(13, err);
-  });
+    return content.toString().substr(-5);
+  }).log('function with callback');
 
 // am an array or object
 am(anArray)
@@ -152,4 +150,12 @@ am(function (cb) {
   console.log(143, r);
 }).catch(function (e) {
   console.log(145, e);
+});
+
+am.resolve(function* () {
+  return yield 56;
+}).log('resolve 159')
+
+am.resolve(Promise.resolve(67)).then(function () {
+  console.log(arguments[0]);
 });

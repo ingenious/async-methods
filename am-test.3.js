@@ -85,6 +85,11 @@ am([33, 4, 555]).timeout(200).filter(function* (value) {
   return yield am.resolve(4 - value);
 }).log('filter asyncronous, 807');
 
+am(4).timeout(200).filter(function* (value) {
+  return yield am.resolve(4 - value);
+}).log('filter asyncronous non-object');
+
+
 am(7).filter(function (value) {
   return 7 - value;
 }).log(810);
@@ -152,7 +157,7 @@ am(function* () {
       }
     }
   };
-}).log();
+}).log('yield object with async attributes');
 
 am(function* () {
   return yield [
@@ -216,3 +221,44 @@ am.waterfall({
     cb(null, 6);
   }
 }).log(585);
+
+am(function* (a, b) {
+
+
+  a += b;
+  return yield a;
+}(45, 55)).log('iterator');
+// iterator 100
+
+// https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols
+;
+
+
+am([2, 34].entries()).log('iterator II')
+
+// iterator II undefined
+
+
+am(true).filter(function* (value) {
+  return value;
+}).log('other')
+
+// 'other' true
+
+
+am(Promise.resolve([45, 67]))
+  .map(function (item) {
+    return item / 10;
+  }).log('wrap promise')
+
+// logs
+// wrap promise  [ 4.5, 6.7 ]​​​​​
+
+am.race({
+  a: Promise.resolve(56),
+  b: Promise.resolve(45)
+}).log('race')
+
+Promise.race([Promise.resolve(56), Promise.resolve(45)]).then(function (result) {
+  console.log(result);
+})

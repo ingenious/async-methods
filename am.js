@@ -45,9 +45,20 @@ class AM extends Promise {
       });
   }
 
-
-
   timeout(ms) {
+    let self = this;
+    return new AM(function (resolve, reject) {
+      setTimeout(function () {
+        self.then(resolve).catch(reject);
+      }, ms);
+    }, {
+      // pass through context
+      timer: self._state_.timer,
+      prev: self._state_.prev
+    });
+  }
+
+  wait(ms) {
     let self = this;
     return new AM(function (resolve, reject) {
       setTimeout(function () {
@@ -387,7 +398,7 @@ class AM extends Promise {
   log(label, errorLabel, errorObject) {
     let self = this,
       stack, lineNumber, filepath, file;
-    for (var i = 0; i < arguments; i++) {
+    for (var i = 0; i < arguments.length; i++) {
       if (arguments[i] instanceof Error) {
         errorObject = arguments[i];
       }
@@ -400,13 +411,21 @@ class AM extends Promise {
     }
     self.then(function (result) {
       if (label) {
-        console.log(label, '[' + (new Date() - self._state_.timer) + 'ms]', result);
+        if (lineNumber) {
+          console.log(label, ' line ' + lineNumber, ' of ' + file, result);
+        } else {
+          console.log(label, '[' + (new Date() - self._state_.timer) + 'ms]', result);
+        }
       } else {
         console.log(result);
       }
     }).catch(function (err) {
       if (errorLabel) {
-        console.log(errorLabel, err);
+        if (lineNumber) {
+          console.log(errorLabel, ' line ' + lineNumber, ' of ' + file, ':', err);
+        } else {
+          console.log(errorLabel, err);
+        }
       } else {
         console.log(err);
       }
@@ -519,21 +538,40 @@ am = function (initial) {
   }
 };
 am.resolve = function (value) {
-  return new AM(function (resolve) {
-    resolve(value);
-  });
+  if (am.isGenerator(value) || value instanceof AM || am.isPromise(value)) {
+    return am(value).then(function (result) {
+      return new AM(function (resolve) {
+        resolve(result);
+      });
+    });
+  } else {
+    return new AM(function (resolve) {
+      resolve(value);
+    });
+  }
 };
 am.reject = function (err) {
-  return new AM(function (resolve, reject) {
-    reject(err);
-  });
+  if (am.isGenerator(err) || err instanceof AM || am.isPromise(err)) {
+    am(err).catch(function (err) {
+      return new AM(function (resolve) {
+        resolve(err);
+      });
+    });
+  } else {
+    return new AM(function (resolve, reject) {
+      reject(err);
+    });
+  }
 
 };
 am.isGenerator = function () {
   return arguments[0] && arguments[0].constructor && arguments[0].constructor.name === 'GeneratorFunction';
 };
 am.isNextable = function () {
-  return arguments[0] && typeof arguments[0] === 'object' && typeof arguments[0].next === 'function' && !am.isArray(arguments[0]) && typeof arguments[0][Symbol.iterator] === 'function';
+  return arguments[0] && typeof arguments[0] === 'object' && typeof arguments[0].next === 'function'
+}
+am.isIterable = function () {
+  return typeof arguments[0][Symbol.iterator] === 'function';
 };
 am.isObject = function () {
   return arguments[0] && arguments[0].constructor && arguments[0].constructor.name && arguments[0].constructor.name === 'Object';
@@ -601,11 +639,12 @@ am.race = function (initial) {
         (function (value, attr) {
           list.push(am.all(value)
             .then(function (result) {
-              response[attr] = result;
+              return am([attr, result])
             }));
         })(initial[attr], attr);
       }
-      AM.race(list).then(function () {
+      AM.race(list).then(function (result) {
+        response[result[0]] = result[1];
         resolve(response);
       }).catch(reject);
     });
@@ -691,7 +730,7 @@ am.forEach = function (initial, tolerant) {
 };
 
 am.filter = function (initial, fn, tolerant, mapFilter) {
-  let newResult, keys = [],
+  let keys = [],
     list,
     response,
     iterate = function (_am, index) {
@@ -735,9 +774,7 @@ am.filter = function (initial, fn, tolerant, mapFilter) {
   // if not object or array return promise 
   if (!am.isObject(initial) && !am.isArray(initial)) {
     return am(fn(initial)).next(function (newResult) {
-
       return am(newResult ? (mapFilter ? newResult : initial) : null);
-
     });
   } else if (am.isObject(initial)) {
     list = {};
@@ -788,13 +825,13 @@ am.waterfall = function (initial) {
               return iterate(am(list[keys[index]]), index);
             }
           } else {
-            return Promise.resolve(response);
+            return AM.resolve(response);
           }
         }).catch(function (err) {
-          return Promise.reject(err);
+          return AM.reject(err);
         });
       } else {
-        return Promise.resolve(response);
+        return am.resolve(response);
       }
     };
   if (!am.isObject(initial) && !am.isArray(initial)) {
@@ -818,6 +855,19 @@ am.waterfall = function (initial) {
     return iterate(am(list[keys[0]]), 0);
   }
 };
+
+am.fn = function (fn) {
+  let self = this,
+    args = [];
+  for (var i = 1; i < arguments.length; i++) {
+    args.push(arguments[i]);
+  }
+  if (typeof fn === 'function') {
+    return am(fn.apply(self, args));
+  } else {
+    return am(fn);
+  }
+}
 
 am.sfFn = function (initial) {
   let self = this,

@@ -2,7 +2,7 @@
 
 
 let // co = require('co'),
-  am = require('async-methods');
+  am = require('./am.js');
 
 
 
