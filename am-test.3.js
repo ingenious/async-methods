@@ -33,6 +33,11 @@ am([3, 4, 5]).mapFilter(function (value, i) {
   return 2 * value + i;
 }).log(799);
 
+am([3, 4, 5]).mapFilter(function (value, i) {
+  let a = 2 * value + i;
+  return a > 6 ? a : false;
+}).log('mapfilter');
+
 am([3, 4, 5]).map(function (value, i) {
   return 2 * value + i;
 }).log(804);
@@ -70,7 +75,7 @@ am({
   b: 56,
   c: 78
 }).forEach(function* (value, attr) {
-  console.log(yield am.resolve(3 * value), yield am.resolve(attr));
+  console.log(73, yield am.resolve(3 * value), yield am.resolve(attr));
 }).log('object async');
 
 am(7).forEach(function* (value, i) {
@@ -125,15 +130,15 @@ am.race([am.resolve(999).timeout(2000), am.resolve(8).timeout(1000)]).log('race'
 am.race(56).log('solo 56');
 
 am.resolve(45).next(function (r) {
-  console.log(this._state_)
-  console.log(r)
+  console.log(this._state_);
+  console.log(r);
   return 455;
 }).next(function (r) {
 
   this._state_.prev.then(function (result) {
     console.log(result);
   });
-  console.log(this._state_)
+  console.log(this._state_);
   console.log(r);
 
 }).log('test');
@@ -164,7 +169,7 @@ am(function* () {
     Promise.resolve(90), Promise.resolve(190)
   ];
 }).filter(function* (number) {
-  return Promise.resolve(number < 100);
+  return yield Promise.resolve(number < 100);
 }).log('async filter');
 
 // wrap a callback function
@@ -187,7 +192,7 @@ am.all({
 
 am(function (cb) {
   cb(null, 4);
-}).log('callback')
+}).log('callback');
 
 am.all(function (cb) {
   cb(null, 4);
@@ -231,17 +236,17 @@ am(function* (a, b) {
 // iterator 100
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols
-;
 
 
-am([2, 34].entries()).log('iterator II')
+
+am([2, 34].entries()).log('iterator II');
 
 // iterator II undefined
 
 
 am(true).filter(function* (value) {
-  return value;
-}).log('other')
+  return yield value;
+}).log('other');
 
 // 'other' true
 
@@ -249,16 +254,16 @@ am(true).filter(function* (value) {
 am(Promise.resolve([45, 67]))
   .map(function (item) {
     return item / 10;
-  }).log('wrap promise')
+  }).log('wrap promise');
 
 // logs
 // wrap promise  [ 4.5, 6.7 ]​​​​​
 
 am.race({
   a: Promise.resolve(56),
-  b: Promise.resolve(45)
-}).log('race')
+  b: 45
+}).log('race');
 
 Promise.race([Promise.resolve(56), Promise.resolve(45)]).then(function (result) {
   console.log(result);
-})
+});

@@ -30,7 +30,7 @@ am([2, 3, 4]).next(function () {}).log()
 am({
     a: 27,
     b: 78
-}).filter(function* (value, attr) {
+}).filter(function* (value /*, attr*/ ) {
 
     let a = yield Promise.resolve(value);
     return a > 50;
@@ -39,13 +39,11 @@ am({
 // logs
 // ​​​​​object filter  { b: 78 }​​​​​
 
-am(456).then(function (value) {
+console.log(am(456).then(function (value) {
     return am(2 * value);
 
 
-}).then(function (nextValue) {
-    console.log(nextValue);
-});
+}));
 
 Promise.resolve(34).then(function (result) {
 
@@ -58,7 +56,7 @@ Promise.resolve(34).then(function (result) {
 am(456).then(function* (value) {
 
     console.log(value);
-    return 2 * value;
+    return yield 2 * value;
 
 }).then(function (nextValue) {
     console.log(nextValue);

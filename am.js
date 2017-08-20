@@ -19,7 +19,7 @@ class AM extends Promise {
         prev: self
       };
     return AM._chain(self, newContext)(fn,
-      function (resolve, reject, fn, result, err) {
+      function (resolve, reject, fn, result /*, err*/ ) {
         if (!am.isGenerator(fn)) {
           let newResult = fn.apply(self, [result]);
 
@@ -369,7 +369,7 @@ class AM extends Promise {
             try {
               mapped[i] = fn.apply(self, [result[i], i, result]);
             } catch (e) {
-              console.log(357, e)
+
               reject(e);
             }
           }
@@ -568,8 +568,8 @@ am.isGenerator = function () {
   return arguments[0] && arguments[0].constructor && arguments[0].constructor.name === 'GeneratorFunction';
 };
 am.isNextable = function () {
-  return arguments[0] && typeof arguments[0] === 'object' && typeof arguments[0].next === 'function'
-}
+  return arguments[0] && typeof arguments[0] === 'object' && typeof arguments[0].next === 'function';
+};
 am.isIterable = function () {
   return typeof arguments[0][Symbol.iterator] === 'function';
 };
@@ -639,7 +639,7 @@ am.race = function (initial) {
         (function (value, attr) {
           list.push(am.all(value)
             .then(function (result) {
-              return am([attr, result])
+              return am([attr, result]);
             }));
         })(initial[attr], attr);
       }
@@ -867,7 +867,7 @@ am.fn = function (fn) {
   } else {
     return am(fn);
   }
-}
+};
 
 am.sfFn = function (initial) {
   let self = this,
