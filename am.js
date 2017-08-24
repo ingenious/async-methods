@@ -133,8 +133,8 @@ class AM extends Promise {
 
           // 4,5. object or array in (asynchronous)
           if (result.length || (am.isObject(result) && Object.keys(result).length)) {
-            am.filter(result, fn, tolerant, mapFilter).then(function () {
-              resolve(result);
+            am.filter(result, fn, tolerant, mapFilter).then(function (response) {
+              resolve(response);
             }).catch(reject);
           } else {
             resolve(result);

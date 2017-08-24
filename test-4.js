@@ -1,7 +1,7 @@
 'use strict';
 
 let am = require('./am.js');
-
+/*
 let sf = function (a, success, fail) {
     if (a < 10) {
         success(a);
@@ -30,7 +30,7 @@ am([2, 3, 4]).next(function () {}).log()
 am({
     a: 27,
     b: 78
-}).filter(function* (value /*, attr*/ ) {
+}).filter(function* (value ) {
 
     let a = yield Promise.resolve(value);
     return a > 50;
@@ -60,4 +60,10 @@ am(456).then(function* (value) {
 
 }).then(function (nextValue) {
     console.log(nextValue);
-});
+});*/
+
+am([3, 0, 9]).mapFilter(function* (value) {
+
+    return yield value ? value : false;
+
+}).log('mapFIlter');
