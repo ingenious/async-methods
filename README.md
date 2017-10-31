@@ -40,13 +40,13 @@ ES6 generators and yield statements are interpreted similarly
 In package.json
 
 ```
-	"async-methods":"ingenious/async-methods"
+	"async-methods":"^0.0.2"
 ```
 
 In console
 
 ```
-	> npm install ingenious/async-methods
+	> npm install --save async-methods
 ```
 In code
 
