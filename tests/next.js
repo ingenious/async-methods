@@ -40,12 +40,28 @@ describe('.next()', function() {
     })
   })
   describe('Asynchronous - no returned value from generator', function() {
-    it('should return extended promise resolving to to returned value', function(done) {
+    it('should return extended promise resolving to original value', function(done) {
       assert.ok(
         am([5, 6, 7])
           .next(function*(items) {
             yield Promise.resolve({ a: 56 })
           })
+          .then(r => {
+            assert.deepStrictEqual(r, [5, 6, 7])
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('If Argument other than a function or generator', function() {
+    it('passes through original resolved value', function(done) {
+      assert.ok(
+        am([5, 6, 7])
+          .next(true)
           .then(r => {
             assert.deepStrictEqual(r, [5, 6, 7])
             done()
@@ -64,6 +80,9 @@ describe('.next()', function() {
           .next(function*(items) {
             throw { error: 57 }
             return yield Promise.resolve(item / 2)
+          })
+          .then(r => {
+            assert.fail()
           })
           .catch(function(err) {
             assert.deepStrictEqual(err, { error: 57 })

@@ -10,6 +10,9 @@ class ExtendedPromise extends Promise {
   }
 
   prev() {
+    let self = this
+    // prevent unhandled Promise error
+    self.error(err => {})
     return this._state_.prev
   }
   next(fn) {
