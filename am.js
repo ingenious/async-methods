@@ -18,28 +18,32 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result /*, err*/) {
-      if (!am.isGenerator(fn)) {
-        let newResult = fn.apply(self, [result])
-
-        // if function doesnt return passs through
-        if (newResult === undefined) {
-          resolve(result)
-        } else {
-          resolve(newResult)
-        }
+    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+      if (err) {
+        reject(err)
       } else {
-        am
-          .co(fn.apply(self, [result]))
-          .then(function(newResult) {
-            // if generator doesn't return pass through
-            if (newResult === undefined) {
-              resolve(result)
-            } else {
-              resolve(newResult)
-            }
-          })
-          .catch(reject)
+        if (!am.isGenerator(fn)) {
+          let newResult = fn.apply(self, [result])
+
+          // if function doesnt return passs through
+          if (newResult === undefined) {
+            resolve(result)
+          } else {
+            resolve(newResult)
+          }
+        } else {
+          // generator
+          am(fn.apply(self, [result]))
+            .then(function(newResult) {
+              // if generator doesn't return pass through
+              if (newResult === undefined) {
+                resolve(result)
+              } else {
+                resolve(newResult)
+              }
+            })
+            .catch(reject)
+        }
       }
     })
   }
