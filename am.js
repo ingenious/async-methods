@@ -1,7 +1,7 @@
 'use strict'
 
 let am
-class AM extends Promise {
+class ExtendedPromise extends Promise {
   constructor(fn, context) {
     super(fn)
     this._state_ = context || {}
@@ -18,7 +18,7 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+    return ExtendedPromise._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       if (err) {
         reject(err)
       } else {
@@ -34,7 +34,7 @@ class AM extends Promise {
         } else if (am.isGenerator(fn)) {
           // generator
           am(fn.apply(self, [result]))
-            .then(function(newResult) {
+            .next(function(newResult) {
               // if generator doesn't return pass through
               if (newResult === undefined) {
                 resolve(result)
@@ -42,7 +42,7 @@ class AM extends Promise {
                 resolve(newResult)
               }
             })
-            .catch(reject)
+            .error(reject)
         } else {
           // if next passed anything other than function of generator function
           // mirrors behaviour of then()
@@ -54,10 +54,10 @@ class AM extends Promise {
 
   timeout(ms) {
     let self = this
-    return new AM(
+    return new ExtendedPromise(
       function(resolve, reject) {
         setTimeout(function() {
-          self.then(resolve).catch(reject)
+          self.next(resolve).error(reject)
         }, ms)
       },
       {
@@ -70,10 +70,10 @@ class AM extends Promise {
 
   wait(ms) {
     let self = this
-    return new AM(
+    return new ExtendedPromise(
       function(resolve, reject) {
         setTimeout(function() {
-          self.then(resolve).catch(reject)
+          self.next(resolve).error(reject)
         }, ms)
       },
       {
@@ -91,7 +91,7 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+    return ExtendedPromise._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       let attr, i, mapped, newResult
       if (err) {
         reject(err)
@@ -143,10 +143,10 @@ class AM extends Promise {
         if (result.length || (am.isObject(result) && Object.keys(result).length)) {
           am
             .filter(result, fn, tolerant, mapFilter)
-            .then(function(newResult) {
+            .next(function(newResult) {
               resolve(newResult)
             })
-            .catch(reject)
+            .error(reject)
         } else {
           resolve(result)
         }
@@ -155,10 +155,10 @@ class AM extends Promise {
 
         // 6. other in (asynchronous)
         am(fn.apply(self, [result, 0, [result]]))
-          .then(function(newResult) {
+          .next(function(newResult) {
             resolve(newResult || null)
           })
-          .catch(function(err) {
+          .error(function(err) {
             if (!tolerant) {
               reject(err)
             } else {
@@ -175,7 +175,7 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+    return ExtendedPromise._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       let attr, i, mapped, newResult
       if (err) {
         reject(err)
@@ -226,19 +226,19 @@ class AM extends Promise {
         // 4,5. object or array in (asynchronous)
         am
           .filter(result, fn, tolerant)
-          .then(function(newResult) {
+          .next(function(newResult) {
             resolve(newResult)
           })
-          .catch(reject)
+          .error(reject)
       } else if (am.isGenerator(fn)) {
         mapped = fn.apply(self, [result, 0, [result]])
 
         // 6. other in (asynchronous)
         am(fn.apply(self, [result, 0, [result]]))
-          .then(function(newResult) {
+          .next(function(newResult) {
             resolve(newResult ? result : null)
           })
-          .catch(function(err) {
+          .error(function(err) {
             if (!tolerant) {
               reject(err)
             } else {
@@ -249,11 +249,11 @@ class AM extends Promise {
     })
   }
 
-  // convert an AM object to a Promise
+  // convert an ExtendedPromise object to a Promise
   promise() {
     let self = this
     return new Promise(function(resolve, reject) {
-      self.then(resolve).catch(reject)
+      self.next(resolve).error(reject)
     })
   }
   forEach(fn) {
@@ -262,7 +262,7 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+    return ExtendedPromise._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       let attr, i, mapped
       if (err) {
         reject(err)
@@ -292,10 +292,10 @@ class AM extends Promise {
         }
         am
           .forEach(mapped)
-          .then(function() {
+          .next(function() {
             resolve(result)
           })
-          .catch(reject)
+          .error(reject)
       } else if (am.isGenerator(fn) && am.isArray(result)) {
         // 5. array in (asynchronous)
         mapped = []
@@ -304,19 +304,19 @@ class AM extends Promise {
         }
         am
           .forEach(mapped)
-          .then(function() {
+          .next(function() {
             resolve(result)
           })
-          .catch(reject)
+          .error(reject)
       } else if (am.isGenerator(fn)) {
         mapped = fn.apply(self, [result, 0, [result]])
         // 6. other in (asynchronous)
         am
           .forEach(mapped)
-          .then(function() {
+          .next(function() {
             resolve(result)
           })
-          .catch(reject)
+          .error(reject)
       }
     })
   }
@@ -327,7 +327,7 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+    return ExtendedPromise._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       let attr, i, mapped
       if (err) {
         reject(err)
@@ -361,10 +361,10 @@ class AM extends Promise {
         }
         am
           .forEach(mapped, tolerant)
-          .then(function(newResult) {
+          .next(function(newResult) {
             resolve(newResult)
           })
-          .catch(reject)
+          .error(reject)
       } else if (am.isGenerator(fn) && am.isArray(result)) {
         // 5. array in (asynchronous)
         mapped = []
@@ -377,10 +377,10 @@ class AM extends Promise {
         }
         am
           .forEach(mapped, tolerant)
-          .then(function(newResult) {
+          .next(function(newResult) {
             resolve(newResult)
           })
-          .catch(reject)
+          .error(reject)
       } else if (am.isGenerator(fn)) {
         try {
           mapped = fn.apply(self, [result, 0, [result]])
@@ -391,10 +391,10 @@ class AM extends Promise {
         // 6. other in (asynchronous)
         am
           .forEach(mapped, tolerant)
-          .then(function(newResult) {
+          .next(function(newResult) {
             resolve(newResult)
           })
-          .catch(reject)
+          .error(reject)
       }
     })
   }
@@ -417,7 +417,7 @@ class AM extends Promise {
       file = filepath.slice(-2).join('/')
     }
     self
-      .then(function(result) {
+      .next(function(result) {
         if (label) {
           if (lineNumber) {
             console.log(label, ' line ' + lineNumber, ' of ' + file, result)
@@ -428,7 +428,7 @@ class AM extends Promise {
           console.log(result)
         }
       })
-      .catch(function(err) {
+      .error(function(err) {
         if (errorLabel) {
           if (lineNumber) {
             console.log(errorLabel, ' line ' + lineNumber, ' of ' + file, ':', err)
@@ -450,7 +450,7 @@ class AM extends Promise {
         timer: self._state_.timer,
         prev: self
       }
-    return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
+    return ExtendedPromise._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       let newResult
       if (err) {
         if (typeof fn === 'function' && !am.isGenerator(fn)) {
@@ -463,7 +463,7 @@ class AM extends Promise {
           }
         } else if (am.isGenerator(fn)) {
           am(fn(err))
-            .then(function(newResult) {
+            .next(function(newResult) {
               // pass through if nothing returned
               if (newResult === undefined) {
                 resolve()
@@ -471,7 +471,7 @@ class AM extends Promise {
                 resolve(newResult)
               }
             })
-            .catch(reject)
+            .error(reject)
         } else {
           reject(err)
         }
@@ -480,27 +480,26 @@ class AM extends Promise {
       }
     })
   }
-}
-
-AM._chain = function(_am, context) {
-  return function(fn, transform) {
-    return new AM(function(resolve, reject) {
-      _am
-        .then(function(result) {
-          try {
-            transform(resolve, reject, fn, result, null)
-          } catch (e) {
-            reject(e)
-          }
-        })
-        .catch(function(err) {
-          try {
-            transform(resolve, reject, fn, null, err)
-          } catch (e) {
-            reject(e)
-          }
-        })
-    }, context || _am._state_)
+  static _chain(self, context) {
+    return function(fn, transform) {
+      return new ExtendedPromise(function(resolve, reject) {
+        self
+          .then(function(result) {
+            try {
+              transform(resolve, reject, fn, result, null)
+            } catch (e) {
+              reject(e)
+            }
+          })
+          .catch(function(err) {
+            try {
+              transform(resolve, reject, fn, null, err)
+            } catch (e) {
+              reject(e)
+            }
+          })
+      }, context || self._state_)
+    }
   }
 }
 
@@ -510,11 +509,11 @@ am = function(initial) {
   for (var i = 1; i < arguments.length; i++) {
     args.push(arguments[i])
   }
-  if (initial instanceof AM) {
+  if (initial instanceof ExtendedPromise) {
     return initial
   } else if (am.isPromise(initial)) {
     // wrap Promises
-    return new AM(function(resolve, reject) {
+    return new ExtendedPromise(function(resolve, reject) {
       initial.then(resolve).catch(reject)
     })
   } else if (am.isGenerator(initial) || am.isNextable(initial)) {
@@ -522,7 +521,7 @@ am = function(initial) {
     return am.co(initial)
   } else if (typeof initial === 'function') {
     // wrap functions
-    return new AM(function(resolve, reject) {
+    return new ExtendedPromise(function(resolve, reject) {
       args.push(function(err) {
         if (err) {
           reject(err)
@@ -538,33 +537,33 @@ am = function(initial) {
     })
   } else {
     // wrap other
-    return new AM(function(resolve) {
+    return new ExtendedPromise(function(resolve) {
       resolve(initial)
     })
   }
 }
 am.resolve = function(value) {
-  if (am.isGenerator(value) || value instanceof AM || am.isPromise(value)) {
-    return am(value).then(function(result) {
-      return new AM(function(resolve) {
+  if (am.isGenerator(value) || value instanceof ExtendedPromise || am.isPromise(value)) {
+    return am(value).next(function(result) {
+      return new ExtendedPromise(function(resolve) {
         resolve(result)
       })
     })
   } else {
-    return new AM(function(resolve) {
+    return new ExtendedPromise(function(resolve) {
       resolve(value)
     })
   }
 }
 am.reject = function(err) {
-  if (am.isGenerator(err) || err instanceof AM || am.isPromise(err)) {
-    am(err).catch(function(err) {
-      return new AM(function(resolve) {
+  if (am.isGenerator(err) || err instanceof ExtendedPromise || am.isPromise(err)) {
+    am(err).error(function(err) {
+      return new ExtendedPromise(function(resolve) {
         resolve(err)
       })
     })
   } else {
-    return new AM(function(resolve, reject) {
+    return new ExtendedPromise(function(resolve, reject) {
       reject(err)
     })
   }
@@ -611,7 +610,7 @@ am.co = function() {
   if (!iterable) {
     return am.apply(self, arguments)
   }
-  return new AM(function(resolve, reject) {
+  return new ExtendedPromise(function(resolve, reject) {
     let iterate = function(next) {
       if (next.done) {
         return resolve(next.value)
@@ -620,10 +619,10 @@ am.co = function() {
         // iterate down in data structure co-wise
         am
           .all(next.value)
-          .then(function(result) {
+          .next(function(result) {
             iterate(iterable.next(result))
           })
-          .catch(function(err) {
+          .error(function(err) {
             reject(err)
           })
       } catch (e) {
@@ -647,24 +646,24 @@ am.race = function(initial) {
     for (i = 0; i < initial.length; i++) {
       list.push(am.all(initial[i]))
     }
-    return AM.race(list)
+    return ExtendedPromise.race(list)
   } else {
-    return new AM(function(resolve, reject) {
+    return new ExtendedPromise(function(resolve, reject) {
       for (attr in initial) {
         ;(function(value, attr) {
           list.push(
-            am.all(value).then(function(result) {
+            am.all(value).next(function(result) {
               return am([attr, result])
             })
           )
         })(initial[attr], attr)
       }
-      AM.race(list)
-        .then(function(result) {
+      ExtendedPromise.race(list)
+        .next(function(result) {
           response[result[0]] = result[1]
           resolve(response)
         })
-        .catch(reject)
+        .error(reject)
     })
   }
 }
@@ -674,7 +673,7 @@ am.parallel = am.all = function(initial) {
     i,
     list = [],
     response = {}
-  if (initial instanceof AM) {
+  if (initial instanceof ExtendedPromise) {
     return initial
   } else if (!am.isObject(initial) && !am.isArray(initial)) {
     return am(initial)
@@ -682,23 +681,23 @@ am.parallel = am.all = function(initial) {
     for (i = 0; i < initial.length; i++) {
       list.push(am.all(initial[i]))
     }
-    return AM.all(list)
+    return ExtendedPromise.all(list)
   } else {
-    return new AM(function(resolve, reject) {
+    return new ExtendedPromise(function(resolve, reject) {
       for (attr in initial) {
         ;(function(value, attr) {
           list.push(
-            am.all(value).then(function(result) {
+            am.all(value).next(function(result) {
               response[attr] = result
             })
           )
         })(initial[attr], attr)
       }
-      AM.all(list)
-        .then(function() {
+      ExtendedPromise.all(list)
+        .next(function() {
           resolve(response)
         })
-        .catch(reject)
+        .error(reject)
     })
   }
 }
@@ -708,10 +707,10 @@ am.forEach = function(initial, tolerant) {
   let keys = [],
     list,
     response,
-    iterate = function(_am, index) {
+    iterate = function(self, index) {
       if (index < keys.length) {
-        return _am
-          .then(function(result) {
+        return self
+          .next(function(result) {
             if (am.isArray(response)) {
               response.push(result)
             } else {
@@ -723,7 +722,7 @@ am.forEach = function(initial, tolerant) {
               return am.resolve(response)
             }
           })
-          .catch(function(err) {
+          .error(function(err) {
             if (!tolerant) {
               return am.reject(err)
             }
@@ -762,10 +761,10 @@ am.filter = function(initial, fn, tolerant, mapFilter) {
   let keys = [],
     list,
     response,
-    iterate = function(_am, index) {
+    iterate = function(self, index) {
       if (index < keys.length) {
-        return _am
-          .then(function(result) {
+        return self
+          .next(function(result) {
             // if the result of the async operation returns a truthy response
             // include original element except if mapFilter include new result
             if (result && am.isArray(response)) {
@@ -782,7 +781,7 @@ am.filter = function(initial, fn, tolerant, mapFilter) {
               return Promise.resolve(response)
             }
           })
-          .catch(function(err) {
+          .error(function(err) {
             // if tolerant specified, on error continue iteration to end
             if (!tolerant) {
               return Promise.reject(err)
@@ -835,7 +834,7 @@ am.waterfall = function(initial) {
     iterate = function(promise, index) {
       if (index < keys.length) {
         return promise
-          .then(function(result) {
+          .next(function(result) {
             response[keys[index]] = result
             if (index < keys.length - 1) {
               ++index
@@ -851,11 +850,11 @@ am.waterfall = function(initial) {
                 return iterate(am(list[keys[index]]), index)
               }
             } else {
-              return AM.resolve(response)
+              return ExtendedPromise.resolve(response)
             }
           })
-          .catch(function(err) {
-            return AM.reject(err)
+          .error(function(err) {
+            return ExtendedPromise.reject(err)
           })
       } else {
         return am.resolve(response)
@@ -903,11 +902,11 @@ am.sfFn = function(initial) {
   for (i; i < arguments.length; i++) {
     args.push(arguments[i])
   }
-  return new AM(function(resolve, reject) {
+  return new ExtendedPromise(function(resolve, reject) {
     args.push(resolve)
     args.push(reject)
     initial.apply(self, args)
   })
 }
-am.ExtendedPromise = AM
+am.ExtendedPromise = ExtendedPromise
 module.exports = am
