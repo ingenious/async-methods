@@ -3,10 +3,10 @@ import am from '../am'
 
 describe('.mapFilter()', () => {
   describe('Array synchronous', () => {
-    it('should return extended extended extended extended promise resolving to filtered array of returned values in \n        map function', function(
+    it('should return extended promise resolving to filtered array of returned values in \n        map function', function(
       done
     ) {
-      let filtered = am([5, 6, 7]).mapFilter(function(item) {
+      let filtered = am([5, 6, 7]).mapFilter(function(item, i) {
         return item > 5 ? item / 2 : false
       })
       assert.ok(filtered instanceof am.ExtendedPromise)
@@ -24,7 +24,7 @@ describe('.mapFilter()', () => {
     })
   })
   describe('Array asynchronous', () => {
-    it('should return extended extended extended extended promise resolving to filtered array of asynchronously \n        returned values in map generator function', function(
+    it('should return  extended promise resolving to filtered array of asynchronously \n        returned values in map generator function', function(
       done
     ) {
       let filtered = am([5, 6, 7]).mapFilter(function*(item) {
@@ -104,7 +104,7 @@ describe('.mapFilter()', () => {
     })
   })
   describe('Object synchronous', () => {
-    it('should return extended extended extended extended promise resolving to object with returned values in \n        map function', function(
+    it('should return extended promise resolving to object with returned values in \n        map function', function(
       done
     ) {
       am({ a: 123, b: 45 })
@@ -122,7 +122,7 @@ describe('.mapFilter()', () => {
     })
   })
   describe('Object asynchronous', () => {
-    it('should return extended extended extended extended promise resolving to object with asynchronously \n        returned values in map generator function', function(
+    it('should return extended promise resolving to object with asynchronously \n        returned values in map generator function', function(
       done
     ) {
       am({ a: 123, b: 45 })
