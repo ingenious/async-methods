@@ -22,7 +22,7 @@ class AM extends Promise {
       if (err) {
         reject(err)
       } else {
-        if (!am.isGenerator(fn)) {
+        if (typeof fn === 'function' && !am.isGenerator(fn)) {
           let newResult = fn.apply(self, [result])
 
           // if function doesnt return passs through
@@ -31,7 +31,7 @@ class AM extends Promise {
           } else {
             resolve(newResult)
           }
-        } else {
+        } else if (am.isGenerator(fn)) {
           // generator
           am(fn.apply(self, [result]))
             .then(function(newResult) {
@@ -43,6 +43,10 @@ class AM extends Promise {
               }
             })
             .catch(reject)
+        } else {
+          // if next passed anything other than function of generator function
+          // mirrors behaviour of then()
+          resolve(result)
         }
       }
     })
@@ -449,25 +453,27 @@ class AM extends Promise {
     return AM._chain(self, newContext)(fn, function(resolve, reject, fn, result, err) {
       let newResult
       if (err) {
-        if (!am.isGenerator(fn)) {
+        if (typeof fn === 'function' && !am.isGenerator(fn)) {
           newResult = fn(err)
           if (newResult === undefined) {
             // pass through if nothing returned
-            reject(err)
+            resolve()
           } else {
             resolve(newResult)
           }
-        } else {
+        } else if (am.isGenerator(fn)) {
           am(fn(err))
             .then(function(newResult) {
               // pass through if nothing returned
               if (newResult === undefined) {
-                reject(err)
+                resolve()
               } else {
                 resolve(newResult)
               }
             })
             .catch(reject)
+        } else {
+          reject(err)
         }
       } else {
         resolve(result)

@@ -13,3 +13,7 @@
 6.  Addded ExtendedPromise property for testing of type
 
 7.  Fixed issue with next whereby an error in source Extended Promise was not passed through 
+
+8. Changed behaviour of error() to mirror ,catch when non function given as argument and when nothing returned from function (resolves to undefined)
+
+9. Changed behaviour of next() to mirror .then() when non function given as argument - resolves to original value.
