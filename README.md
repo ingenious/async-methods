@@ -241,7 +241,7 @@ am(Promise.resolve([45, 67]))
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
-*Filter can be applies to objects as well as arrays
+*Filter can be applied to objects and other entitites as well as arrays
 
 ```
 
@@ -306,6 +306,8 @@ am([3, 4, 5]).mapFilter(function (value, i) {
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
+forEach returns an extended Promise resolving to the initial array or object
+
 
 *synchronous*
 
@@ -316,7 +318,10 @@ am([34, 56, 78]).forEach(function (value, i) {
 }).log();
 
 // logs
-//  34 0, 56 1, 78 2
+//  34 0
+//  56 1 
+//  78 2
+//  [34, 56, 78]
 
 ```
 
@@ -325,11 +330,13 @@ am([34, 56, 78]).forEach(function (value, i) {
 
 ```
 am([34, 56, 78]).forEach(function* (value, i) {
-  return yield am.resolve(2 * value);
+  console.log(yield am.resolve(2 * value),i);
 }).log();
 
 // logs
-//  [64, 112, 156]
+//  68 0
+// 112 1
+// 156 2
 
 
 ```
