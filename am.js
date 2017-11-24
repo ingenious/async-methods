@@ -521,7 +521,7 @@ am = function(initial) {
     })
   } else if (am.isGenerator(initial) || am.isNextable(initial)) {
     //wrap generators and iterables
-    return am.co(initial)
+    return am.co.apply(self, [initial].concat(args))
   } else if (typeof initial === 'function') {
     // wrap functions
     return new ExtendedPromise(function(resolve, reject) {

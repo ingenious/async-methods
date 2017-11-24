@@ -306,7 +306,7 @@ am([3, 4, 5]).mapFilter(function (value, i) {
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
-forEach returns an extended Promise resolving to the initial array or object
+forEach returns an extended Promise resolving to the initial array or objectx
 
 
 *synchronous*

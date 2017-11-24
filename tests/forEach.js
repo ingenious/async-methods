@@ -3,7 +3,7 @@ import am from '../am'
 
 describe('.forEach()', () => {
   describe('Array synchronous', () => {
-    it('should return extended promise resolving to array of returned values in \n        map function', function(
+    it('should return extended promise resolving to array of returned values in \n        forEach function', function(
       done
     ) {
       let ep = am([5, 6, 7]).forEach(item => {
@@ -24,7 +24,7 @@ describe('.forEach()', () => {
     })
   })
   describe('Array asynchronous', () => {
-    it('should return extended promise resolving to array of asynchronously \n        returned values in map generator function', function(
+    it('should return extended promise resolving to array of asynchronously \n        returned values in forEach generator function', function(
       done
     ) {
       let ep = am([34, 56, 78]).forEach(function*(value, i, array) {
@@ -129,6 +129,67 @@ describe('.forEach()', () => {
         ep
           .then(r => {
             assert.deepStrictEqual(r, { a: 123, b: 45 })
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+})
+
+// =======================================
+
+//  static forEach
+
+// ========================================
+
+describe('static method am.forEach()', () => {
+  describe('Array of functions with callback', () => {
+    it('should return extended promise resolving to array of values returned in callback', function(
+      done
+    ) {
+      let ep = am.forEach([
+        function(i, cb) {
+          cb(null, 2 * i)
+        },
+        function(i, cb) {
+          cb(null, 2 * i)
+        }
+      ])
+      assert.ok(ep instanceof am.ExtendedPromise)
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, [0, 2])
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('Array of generators', () => {
+    it('should return extended promise resolving to array of asynchronously \n        returned values in map generator function', function(
+      done
+    ) {
+      let ep = am.forEach([
+        function*(i) {
+          return yield 2 * i
+        },
+        function*(i) {
+          return yield 3 * i
+        }
+      ])
+      assert.ok(ep instanceof am.ExtendedPromise)
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, [0, 3])
             done()
           })
           .catch(err => {

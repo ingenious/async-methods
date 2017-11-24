@@ -3,19 +3,21 @@
   "author": {
     "name": "Stephen Giles"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/ingenious/async-methods.git"
   },
-  "description": "Wrapper for chaining asyncronous and syncronous processes in javascript",
+  "description": "co-like wrapper for chaining asyncronous and syncronous processes in javascript",
   "version": "0.1.0",
   "main": "am.js",
-  "dependencies": {},
+  "dependencies": {
+    
+  },
   "devDependencies": {
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
-    "webpack": "^3.8.1"
+    "webpack": "^3.8.1",
+    "intercept-stdout":"^0.1.2"
   },
   "readmeFilename": "README.md",
   "scripts": {
