@@ -1,5 +1,9 @@
 #  AM (async-methods)
->Efficiency wrapper for chaining any mix of asyncronous and syncronous processes including those wrapped in ES6 generators
+
+>Asynchronous Swiss army-knife for wrapping generators and chaining any mix of asyncronous and synchronous processes 
+
+
+
 
 ```
 
@@ -40,7 +44,7 @@ ES6 generators and yield statements are interpreted similarly
 In package.json
 
 ```
-	"async-methods":"^0.0.2"
+	"async-methods":"^0.1.0"
 ```
 
 In console
