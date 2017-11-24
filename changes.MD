@@ -1,9 +1,10 @@
 ### Version 1.0
 
 #### Changes to functionality
-1.  Changed behaviour of tolerant in map() to push passing items rather than assign to original index (same behaviour as  .mapFilter() )
 
-2.  Added ExtendedPromise property to am for testing of type
+1. Changed behaviour of tolerant in map() to push passing items rather than assign to original index (same behaviour as  .mapFilter() )
+
+2. Added ExtendedPromise property to am for testing of type
 
 3. Changed behaviour of error() to a) mirror .catch when non function given as argument and b) when nothing returned from function (resolves to undefined)
 
@@ -11,17 +12,18 @@
 
 
 #### Fixes
-5.  Fixed second argument in .forEach and .filter (affects map, mapFilter) - i or attr values correctly passed
 
-6.  Corrected error in .forEach() documentation (resolved array is same as initial array)
+5. Fixed second argument in .forEach and .filter (affects map, mapFilter) - i or attr values correctly passed
 
-7.  Fixed issue with next() whereby an error in source Extended Promise was not passed through 
+6. Corrected error in .forEach() documentation (resolved array is same as initial array)
+
+7. Fixed issue with next() whereby an error in source Extended Promise was not passed through 
 
 8. Fix for wrapping generator - any additional arguments now passed to generator function
 
 #### Tests
 
-9.  Added test suite using mocha and webpack-mocha
+9. Added test suite using mocha and webpack-mocha
 
 10. Removed old tests
 
