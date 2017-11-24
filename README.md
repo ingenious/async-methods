@@ -17,6 +17,13 @@
 	// 5
   	
 ```
+
+## Changes in version 0.1.0
+
+
+[changes.MD](https://github.com/ingenious/async-methods/blob/master/changes.MD)
+
+
 ## How it works
 
 #### 1. Harnessing the flexibity of ES6 generators
