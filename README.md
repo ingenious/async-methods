@@ -56,17 +56,20 @@ See also  [npm](https://www.npmjs.com/package/api-responder)
 In package.json
 
 ```
+                                                                                                                                
 	"async-methods":"^0.1.0"
 ```
 
 In console
 
 ```
+                                                         
 	> npm install --save async-methods
 ```
 In code
 
 ```
+                                                         
 	let am=require('async-methods');
 ```
 ## Wrapping
@@ -76,7 +79,9 @@ In code
 **am([3,4,5])** => Extended Promise that returns an array.
 
 synchronous
+
 ```
+                                                         
    am([3, 4, 5]).mapFilter(function (value, i) {
 
      return 2 * value + i;
@@ -84,10 +89,12 @@ synchronous
    }).log('array wrapper);
 
    //  array wrapper [15ms] [ 6, 9, 12 ]​​​​​
+
 ```
 asynchronous
 
 ```
+                                                         
    am([33, 4, 555]).wait(200).filter(function* (value) {
    
      return yield am.resolve(4 - value);
@@ -95,8 +102,10 @@ asynchronous
    }).log('filter asyncronous,');
 
    // ​​​​​filter asyncronous, [204ms] [ 33,  555 ]​​​​​
+
 ```
 ```
+                                                         
    am(4).timeout(200).filter(function* (value) {
    
       return yield am.resolve(4 - value);
@@ -109,6 +118,7 @@ asynchronous
 **am({a:3})** => Extended Promise that returns an object.
 
 ```
+                                                         
    am({ a: 34, b: 56, c: 78})
    
    .forEach(function (value, attr) {
@@ -122,6 +132,7 @@ asynchronous
 **am(iterator)**  => Extended Promise which returns the result of the iterator 
 
 ```
+                                                         
    am(function*(a,b){
       a+=b;
       return yield a;
@@ -135,18 +146,22 @@ asynchronous
 **am(&lt;boolean | string | null&gt;)** => Extended Promise that returns entitity
 
 ```
+                                                         
    am(true).filter(function*(value){
      return value;
    }).log('other')
 
 // 'other' true
 ```
+                                                         
 
 *Entities with asynchronous returns*
 
 **am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)** => Extended Promise that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
 ```
+
+                                                         
    am(fs.readFile, __dirname + '/am.js')
   
      .then(function (content) {
@@ -163,6 +178,7 @@ asynchronous
 **am(generator)**  => returns Extended Promise (in same way as to 'co')
 
 ```
+                                                         
    am(function* () {
      
       return yield {
@@ -187,6 +203,7 @@ asynchronous
 **am(&lt;Promise&gt;)**  => returns chainable Extended Promise
 
 ```
+                                                         
    am(Promise.resolve([45,67]))
     
       .map(function(item){
@@ -203,6 +220,7 @@ asynchronous
 **am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)** =>Extended Promise that returns arguments of the success callback and passes and argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 **WRAP a success/failure function**
 ```
+                                                         
 let sf = function (a, success, fail) {
     if (a < 10) {
         success(a);
@@ -242,7 +260,7 @@ am.sfFn(sf, 1).next(function (r) {
 equivalent to <array>.map().  If the previous stage of the chain resolves to an *array* or *object*, ecah element of the array or object is replaced with the returned result of the function or generator
 
 ```
-
+                                                         
 am(Promise.resolve([45, 67]))
   .map(function (item) {
     return item / 10;
@@ -260,7 +278,7 @@ am(Promise.resolve([45, 67]))
 *Filter can be applied to objects and other entitites as well as arrays
 
 ```
-
+                                                         
 am(7).filter(function (value) {
   return 7 - value;
 }).log();
@@ -271,7 +289,7 @@ am(7).filter(function (value) {
 ```
 
 ```
-
+                                                         
 am(7).filter(function* (value) {
   return yield(8 - value);
 }).log();
@@ -283,7 +301,7 @@ am(7).filter(function* (value) {
 *filter object*
 
 ```
-
+                                                         
 am({
     a: 27,
     b: 78
@@ -308,6 +326,7 @@ If the mapping function for an element returns false, then the element is exclud
 
 
 ```
+                                                         
 am([3, 4, 5]).mapFilter(function (value, i) {
   let a= 2 * value + i;
   return a > 6 ? a :false;
@@ -328,7 +347,7 @@ forEach returns an extended Promise resolving to the initial array or objectx
 *synchronous*
 
 ```
-
+                                                         
 am([34, 56, 78]).forEach(function (value, i) {
   console.log(value, i);
 }).log();
@@ -345,6 +364,7 @@ am([34, 56, 78]).forEach(function (value, i) {
 *asynchronous*
 
 ```
+                                                         
 am([34, 56, 78]).forEach(function* (value, i) {
   console.log(yield am.resolve(2 * value),i);
 }).log();
@@ -359,6 +379,7 @@ am([34, 56, 78]).forEach(function* (value, i) {
 *object*
 
 ```
+                                                         
 am({
   a: 34,
   b: 56,
@@ -381,6 +402,7 @@ am({
 ### .timeout(ms)
 
 ```
+                                                         
     am.waterfall([
       am.resolve(999).timeout(2000),
       am.resolve(8).timeout(1000)
@@ -394,6 +416,7 @@ am({
 
 ### .wait(ms) (*identical to timeout*)
 ```
+                                                         
       am.sfFn(sf, 1).wait(3000).log('wait');
       
       // logs
@@ -420,6 +443,7 @@ If the function or generator returns something other than undefined or an
 error occurs that result or error will be passed to the enxt stage of the chain.
 
 ```
+                                                         
    am.waterfall({
       a: am.reject(88),
       b: function (result, cb) {
@@ -439,10 +463,11 @@ error occurs that result or error will be passed to the enxt stage of the chain.
 
 
 ```
-
+                                                         
 ### .promise() 
 Converts an Extended Promise to a normal promise (with methods catch and then)
 ```
+                                                         
    am([2, 3, 4]).next(function () {}).log()
       .promise()
       .then(function (result) {
@@ -452,6 +477,7 @@ Converts an Extended Promise to a normal promise (with methods catch and then)
       });
    //logs
    // Promise resolves with [2,3,4]
+
 ```
 
 
@@ -472,7 +498,9 @@ If want **fn** to be a generator use **.error()**
 *async module replacement*
 
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
+
 ```
+                                                         
 am.waterfall({
   a: am.reject(88),
   b: function (result, cb) {
@@ -493,6 +521,7 @@ am.waterfall({
 #### am.parallel([&lt;am-able>,&lt;am-able>,..])
 
 ```
+                                                         
    am.parallel([Promise.resolve(45), Promise.resolve(67)])
    
    .log('parallel');
@@ -505,7 +534,7 @@ am.waterfall({
 #### am.forEach(array,fn) 
 where fn is either a function that accepts a callback, or a generator
 ```
-
+                                                         
    am.forEach([3, 4, 5], function (value, cb) {
      cb(null, 2 * value);
    }).log('sync forEach test result');
@@ -526,6 +555,7 @@ These methods have same functionality as their Promise equivalents but return a 
 #### am.resolve(value)
 
 ```
+                                                         
    am.resolve(Promise.resolve(67))
 
      .then(function () {
@@ -539,6 +569,7 @@ These methods have same functionality as their Promise equivalents but return a 
 #### am.reject(err)
 
 ```
+                                                         
    am.reject({message:'no result'})
    
    .catch(function(err){
@@ -556,7 +587,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 *am.all()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps 
 ```
-
+                                                         
      am.all([
         4,
         Promise.reject(56),
@@ -590,7 +621,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 *am.race()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps
 ```
-
+                                                         
    am.race({
    
      a: Promise.resolve(56),
@@ -600,6 +631,15 @@ These methods have same functionality as their Promise equivalents but return a 
 
 // logs
 // race 45
+
+```
+
+## Tests
+
+There are 130 automated functional tests
+
+```
+    $  npm test
 
 ```
 
