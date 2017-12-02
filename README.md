@@ -48,6 +48,11 @@ ES6 generators and yield statements are interpreted similarly
 
  
 ## Installation
+
+[npm](https://www.npmjs.com/package/async-methods)
+
+See also  [npm](https://www.npmjs.com/package/api-responder)
+
 In package.json
 
 ```
