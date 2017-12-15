@@ -19,7 +19,6 @@
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "test": " mocha-webpack ./tests/suite.js  && mocha ./tests/log.js",
-    "watch": "mocha ./tests/log.js && mocha-webpack ./tests/suite.js --watch"
+    "test": " mocha ./tests "
   }
 }

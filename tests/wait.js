@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('wait()', function() {
   it('should return extended promise resolving to original resolved value', function(done) {

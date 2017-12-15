@@ -1,11 +1,9 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('.race()', () => {
   describe('Array of Generators', function() {
-    it('should return extended promise resolving to first returned value of generator', function(
-      done
-    ) {
+    it('should return extended promise resolving to first returned value of generator', function(done) {
       let ep = am.race([
         function*() {
           return yield 23864
@@ -30,18 +28,18 @@ describe('.race()', () => {
     it('should reject if error occurs in a generator', done => {
       let ep = am.race([
         function*() {
-          return yield 23864
-        },
-        function*() {
           throw { error: 78 }
           return yield 563728
+        },
+        function*() {
+          return yield 23864
         }
       ])
       assert.ok(ep instanceof am.ExtendedPromise)
       assert.ok(
         ep
           .then(r => {
-            assert.fail('Generator returned', r)
+            assert.fail(r, 'Race returned', r)
             done()
           })
           .catch(err => {
@@ -93,9 +91,7 @@ describe('.race()', () => {
     })
   })
   describe('Array of Functions with callbacks', () => {
-    it('should return extended promise resolving to first  returned values from callbacks', function(
-      done
-    ) {
+    it('should return extended promise resolving to first  returned values from callbacks', function(done) {
       let ep = am.race([
         cb => {
           cb(null, 23864)
@@ -144,9 +140,7 @@ describe('.race()', () => {
     })
   })
   describe('Object Generators', () => {
-    it('should return extended promise resolving to first returned value of a generator', function(
-      done
-    ) {
+    it('should return extended promise resolving to first returned value of a generator', function(done) {
       let ep = am.race({
         a: function*() {
           return yield 23864
@@ -194,9 +188,7 @@ describe('.race()', () => {
     })
   })
   describe('Object of Promises', () => {
-    it('should return extended promise resolving to first resolved value of a promise', function(
-      done
-    ) {
+    it('should return extended promise resolving to first resolved value of a promise', function(done) {
       let ep = am.race({ a: Promise.resolve(23864), b: Promise.resolve(563728) })
       assert.ok(ep instanceof am.ExtendedPromise)
       assert.ok(
@@ -236,9 +228,7 @@ describe('.race()', () => {
     })
   })
   describe('Object of Functions with callbacks', () => {
-    it('should return extended promise resolving to first returned value from callbacks', function(
-      done
-    ) {
+    it('should return extended promise resolving to first returned value from callbacks', function(done) {
       let ep = am.race({
         a: cb => {
           cb(null, 23864)

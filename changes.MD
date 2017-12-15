@@ -34,3 +34,26 @@
 12.  Internally, .next() and .error() used instead of .then() and .catch()
 
 13.  AM class renamed to ExtendedPromise
+
+
+### Version 1.1
+
+#### Extended Promise Extensions enabled
+1.  am._extend(ExtendedPromise) method added
+
+2.  am-sample-extend module added as template
+
+#### ES6 Classes with aysnc/await supported
+
+1. methods am.isClass, am.argumentsHaveClass added
+
+2. am(method,class) detects and applies named class and method name 
+
+3. am(initial) detects anonymous class with normal or async methods
+
+
+
+#### Testing
+
+1. Test for am.race() (Generators) changed
+2. mocha-wepack deprecated in favour of vanilla mocha

@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('Wrapping', function() {
   describe('Generator', function() {
@@ -21,9 +21,7 @@ describe('Wrapping', function() {
           .catch(done) instanceof Promise
       )
     })
-    it('should return extended promise rejecting to an error occuring in the generator', function(
-      done
-    ) {
+    it('should return extended promise rejecting to an error occuring in the generator', function(done) {
       let ep = am(function*() {
         throw { error: 567 }
         return yield Promise.resolve({ a: 23864 })
@@ -79,9 +77,7 @@ describe('Wrapping', function() {
         })
         .catch(done)
     })
-    it('should pass an error returned in callback to the reject value of\n        the returned Promise', function(
-      done
-    ) {
+    it('should pass an error returned in callback to the reject value of\n        the returned Promise', function(done) {
       am(function*(a, b) {
         return yield function(cb) {
           cb({ error: 78 })
@@ -96,9 +92,7 @@ describe('Wrapping', function() {
         })
         .catch(done)
     })
-    it('should allow Array of asynchrous oprations to be yielded in\n        wrapped generator', function(
-      done
-    ) {
+    it('should allow Array of asynchrous oprations to be yielded in\n        wrapped generator', function(done) {
       am(function*() {
         return yield [Promise.resolve(567), Promise.resolve(89)]
       })
@@ -111,9 +105,7 @@ describe('Wrapping', function() {
         })
         .catch(done)
     })
-    it('should allow Object of asynchrous oprations to be yielded in \n        wrapped generator', function(
-      done
-    ) {
+    it('should allow Object of asynchrous oprations to be yielded in \n        wrapped generator', function(done) {
       am(function*() {
         return yield {
           a: Promise.resolve(567),
@@ -131,9 +123,7 @@ describe('Wrapping', function() {
         })
         .catch(done)
     })
-    it('should allow static entities (boolean, strings etc) to be yielded in \n        wrapped generator', function(
-      done
-    ) {
+    it('should allow static entities (boolean, strings etc) to be yielded in \n        wrapped generator', function(done) {
       am(function*() {
         return yield true
       })
@@ -158,10 +148,8 @@ describe('Wrapping', function() {
         .catch(done)
     })
   })
-  describe('Iterator (Invoked Generator)', function() {
-    it('should return extended promise resolving to returned value of invoked generator', function(
-      done
-    ) {
+  describe('\n          Iterator (Invoked Generator)', function() {
+    it('should return extended promise resolving to returned value of invoked generator', function(done) {
       let ep = am(
         (function*(value) {
           return yield Promise.resolve({ a: value })
@@ -179,9 +167,7 @@ describe('Wrapping', function() {
           .catch(done) instanceof Promise
       )
     })
-    it('should return extended promise rejecting to an error occuring in \n        the invoked generator', function(
-      done
-    ) {
+    it('should return extended promise rejecting to an error occuring in \n        the invoked generator', function(done) {
       let ep = am(
         (function*(value) {
           throw { error: 567 }
@@ -198,7 +184,7 @@ describe('Wrapping', function() {
       )
     })
   })
-  describe('Array', function() {
+  describe('\n     Array', function() {
     it('should return Promise resolving to an array', function(done) {
       let ep = am([2, 3])
       assert.ok(ep instanceof am.ExtendedPromise)
@@ -216,7 +202,7 @@ describe('Wrapping', function() {
       )
     })
   })
-  describe('Object', function() {
+  describe('\n     Object', function() {
     it('should return Promise resolving to an object', function(done) {
       let ep = am({ a: 2, b: 3 })
       assert.ok(ep instanceof am.ExtendedPromise)
@@ -234,10 +220,8 @@ describe('Wrapping', function() {
       )
     })
   })
-  describe('Promise', function() {
-    it('should return extended promise resolving or rejecting to resolved or \n        rejected value of wrapped extended promise', function(
-      done
-    ) {
+  describe('\n     Promise', function() {
+    it('should return extended promise resolving or rejecting to resolved or \n        rejected value of wrapped extended promise', function(done) {
       let ep = am(Promise.resolve(56789))
       assert.ok(ep instanceof am.ExtendedPromise)
       assert.ok(
@@ -256,6 +240,140 @@ describe('Wrapping', function() {
           })
           .catch(done) instanceof Promise
       )
+    })
+  })
+  describe('\n     Anonymous Class', function() {
+    it('should return extended promise resolving to returned value of anonymous class', function(done) {
+      let ep = am(
+        'test',
+        class {
+          async test() {
+            return await Promise.resolve(56789)
+          }
+        }
+      ).next(r => {
+        assert.ok(ep instanceof am.ExtendedPromise)
+        assert.equal(r, 56789)
+        done()
+      })
+    })
+    it('should return extended promise rejecting to rejected value of await statement in anonymous class', function(done) {
+      let ep = am(
+        'test',
+        class {
+          async test() {
+            return await Promise.reject({ e: 567 })
+          }
+        }
+      )
+        .next(r => {
+          assert.ok(ep instanceof am.ExtendedPromise)
+          assert.fail(r, null, 'resolved instead of rejecting')
+          done()
+        })
+        .error(err => {
+          assert.deepEqual(err, { e: 567 })
+          done()
+        })
+        .catch(done)
+    })
+    it('should return extended promise resolving to returned non-async await statement value in anonymous class', function(done) {
+      let ep = am(
+        'test',
+        class {
+          async test() {
+            return await 2223
+          }
+        }
+      ).next(r => {
+        assert.ok(ep instanceof am.ExtendedPromise)
+        assert.equal(r, 2223)
+        done()
+      })
+    })
+    it('should return extended promise rejecting to thrown error in anonymous class', function(done) {
+      let ep = am(
+        'test',
+        class {
+          async test() {
+            throw { error: 99 }
+            return await 2223
+          }
+        }
+      )
+        .next(r => {
+          assert.fail(r, null, 'resolved instead of rejecting')
+
+          done()
+        })
+        .error(err => {
+          assert.ok(ep instanceof am.ExtendedPromise)
+          assert.deepEqual(err, { error: 99 })
+          done()
+        })
+        .catch(done)
+    })
+  })
+  describe('\n     Anonymous Class(newed) with arguments', function() {
+    it('should return extended promise resolving or rejecting to returned value of newed anonymous class', function(done) {
+      let ep = am(
+        'test',
+        new class {
+          async test(value) {
+            return await Promise.resolve(56 + (value || 0))
+          }
+        }(),
+        54
+      ).next(r => {
+        assert.ok(ep instanceof am.ExtendedPromise)
+        assert.equal(r, 110)
+        done()
+      })
+    })
+  })
+  describe('\n     Named Class ', function() {
+    it('should return extended promise resolving or rejecting to returned value of name class', function(done) {
+      // named class
+      class sample {
+        async test() {
+          return await Promise.resolve(56789)
+        }
+      }
+
+      let ep = am('test', sample).next(r => {
+        assert.ok(ep instanceof am.ExtendedPromise)
+        assert.equal(r, 56789)
+        done()
+      })
+    })
+  })
+  describe('\n     Named Class (newed) with arguments ', function() {
+    it('should return extended promise resolving or rejecting to returned value of named class (newed)', function(done) {
+      // named class
+      class sample {
+        constructor(value) {
+          this.value = value
+        }
+        async test(arg) {
+          let self = this
+
+          return await Promise.resolve(5 + (self.value || 0) + (arg || 0))
+        }
+      }
+
+      let ep = am('test', new sample(12), 17)
+        .next(r => {
+          assert.ok(ep instanceof am.ExtendedPromise)
+          assert.equal(r, 34)
+          done()
+        })
+        .error(err => {
+          console.log(295, err)
+          assert.fail(err, null, 'named class')
+
+          done()
+        })
+        .catch(done)
     })
   })
 })

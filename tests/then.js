@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('.then()', function() {
   describe('Accepts normal function', function() {
@@ -39,9 +39,7 @@ describe('.then()', function() {
     })
   })
   describe('if argument is a generator', function() {
-    it('should behave as promise and return extended promise resolving to the generator', function(
-      done
-    ) {
+    it('should behave as promise and return extended promise resolving to the generator', function(done) {
       assert.ok(
         am([5, 6, 7])
           .then(function*(items) {

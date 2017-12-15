@@ -1,11 +1,9 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('.filter()', () => {
   describe('Array synchronous', () => {
-    it('should return extended extended promise resolving to filtered array of returned values in \n        filter function', function(
-      done
-    ) {
+    it('should return extended extended promise resolving to filtered array of returned values in \n        filter function', function(done) {
       let filtered = am([5, 6, 7]).filter(function(item) {
         return item > 5 ? true : false
       })
@@ -23,10 +21,116 @@ describe('.filter()', () => {
       )
     })
   })
-  describe('Array asynchronous', () => {
-    it('should return extended extended promise resolving to filtered array of asynchronously \n        returned values in filter generator function', function(
-      done
-    ) {
+  describe('non-Object/Array applied to function (synchronous)', () => {
+    it('should return extended extended promise resolving to filtered array of returned values in \n        filter function', function(done) {
+      let filtered = am(567).filter(function(item) {
+        return item > 5 ? true : false
+      })
+      assert.ok(filtered instanceof am.ExtendedPromise)
+      assert.ok(
+        filtered
+          .then(r => {
+            assert.deepStrictEqual(r, 567)
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('Array applied to Class (synchronous/asynchronous)', () => {
+    it('should return extended extended promise resolving to filtered array of returned values in \n        class', function(done) {
+      am([4, 5, 6])
+        .filter(
+          'asyncMap',
+          class {
+            async asyncMap(value, i) {
+              return await Promise.resolve(value < 5 ? false : true)
+            }
+          }
+        )
+        .filter(
+          'syncMap',
+          class {
+            syncMap(value) {
+              return value === 6 ? false : 2 * value
+            }
+          }
+        )
+        .next(r => {
+          assert.deepEqual(r, [5])
+          done()
+        })
+        .error(err => {
+          assert.fail(err, null, '')
+          done()
+        })
+    })
+  })
+  describe('non-Object/ Array applied to Class (synchronous/asynchronous)', () => {
+    it('should return extended extended promise resolving to filtered array of returned values in \n        class', function(done) {
+      am(546)
+        .filter(
+          'asyncMap',
+          class {
+            async asyncMap(value, i) {
+              return await Promise.resolve(value < 5 ? false : true)
+            }
+          }
+        )
+        .filter(
+          'syncMap',
+          class {
+            syncMap(value) {
+              return value === 6 ? false : 2 * value
+            }
+          }
+        )
+        .next(r => {
+          console.log(92, r)
+          assert.deepEqual(r, 546)
+          done()
+        })
+        .error(err => {
+          assert.fail(err, null, '')
+          done()
+        })
+        .catch(done)
+    })
+  })
+  describe('Object applied to Class (synchronous/asynchronous)', () => {
+    it('should return extended extended promise resolving to filtered array of returned values in \n        class', function(done) {
+      am({ a: 4, b: 5, c: 6 })
+        .filter(
+          'asyncMap',
+          class {
+            async asyncMap(value, attr) {
+              return await Promise.resolve(value < 5 ? false : true)
+            }
+          }
+        )
+        .filter(
+          'syncMap',
+          class {
+            syncMap(value, attr) {
+              return value === 6 ? false : 2 * value
+            }
+          }
+        )
+        .next(r => {
+          assert.deepEqual(r, { b: 5 })
+          done()
+        })
+        .error(err => {
+          assert.fail(err, null, '')
+          done()
+        })
+    })
+  })
+  describe('Array applied to Generator (asynchronous)', () => {
+    it('should return extended extended promise resolving to filtered array of asynchronously \n        returned values in filter generator function', function(done) {
       let filtered = am([5, 6, 7]).filter(function*(item) {
         let response = yield Promise.resolve(item / 2)
         return response > 2.5 ? true : false
@@ -43,6 +147,24 @@ describe('.filter()', () => {
           })
           .catch(done) instanceof Promise
       )
+    })
+  })
+  describe('non-Array/Object applied to Generator (asynchronous)', () => {
+    it('should return extended extended promise resolving to filtered array of asynchronously \n        returned values in filter generator function', function(done) {
+      let filtered = am(5).filter(function*(item) {
+        let response = yield Promise.resolve(item / 2)
+        return response > 2.5 ? true : false
+      })
+      assert.ok(filtered instanceof am.ExtendedPromise)
+      filtered
+        .then(r => {
+          assert.deepStrictEqual(r, null)
+          done()
+        })
+        .catch(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
     })
   })
   describe('Error handling - error passed to catch', () => {
@@ -120,9 +242,7 @@ describe('.filter()', () => {
     })
   })
   describe('Object synchronous', () => {
-    it('should return extended extended promise resolving to object with returned values in \n        map function', function(
-      done
-    ) {
+    it('should return extended extended promise resolving to object with returned values in \n        map function', function(done) {
       assert.ok(
         am({ a: 123, b: 45 })
           .filter(function(value, attr) {
@@ -140,9 +260,7 @@ describe('.filter()', () => {
     })
   })
   describe('Object asynchronous', () => {
-    it('should return extended extended promise resolving to object with asynchronously \n        returned values in map generator function', function(
-      done
-    ) {
+    it('should return extended extended promise resolving to object with asynchronously \n        returned values in map generator function', function(done) {
       assert.ok(
         am({ a: 123, b: 45 })
           .filter(function*(value, attr) {
@@ -166,9 +284,7 @@ describe('.filter()', () => {
 
 describe('static method .filter()', () => {
   describe('Array synchronous', () => {
-    it('should return extended extended promise resolving to filtered array of returned values in \n        filter function', function(
-      done
-    ) {
+    it('should return extended extended promise resolving to filtered array of returned values in \n        filter function', function(done) {
       let filtered = am.filter([5, 6, 7], function(item) {
         return item > 5 ? true : false
       })
@@ -189,9 +305,7 @@ describe('static method .filter()', () => {
 })
 
 describe('Array asynchronous', () => {
-  it('should return extended extended promise resolving to filtered array of asynchronously \n        returned values in filter generator function', function(
-    done
-  ) {
+  it('should return extended extended promise resolving to filtered array of asynchronously \n        returned values in filter generator function', function(done) {
     let filtered = am.filter([5, 6, 7], function*(item) {
       let response = yield Promise.resolve(item / 2)
       return response > 2.5 ? true : false
@@ -293,9 +407,7 @@ describe('Array asynchronous', () => {
     })
   })
   describe('Object synchronous', () => {
-    it('should return extended extended promise resolving to object with returned values in \n        map function', function(
-      done
-    ) {
+    it('should return extended extended promise resolving to object with returned values in \n        map function', function(done) {
       assert.ok(
         am
           .filter({ a: 123, b: 45 }, function(value, attr) {
@@ -313,9 +425,7 @@ describe('Array asynchronous', () => {
     })
   })
   describe('Object asynchronous', () => {
-    it('should return extended extended promise resolving to object with asynchronously \n        returned values in map generator function', function(
-      done
-    ) {
+    it('should return extended extended promise resolving to object with asynchronously \n        returned values in map generator function', function(done) {
       assert.ok(
         am
           .filter({ a: 123, b: 45 }, function*(value, attr) {

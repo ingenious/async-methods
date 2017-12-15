@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('static method am.fn()', function() {
   it('should return extended promise resolving result of executing the function with any passed arguments', done => {

@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('.promise()', function() {
   describe('returns an (unextended) Promise with same reject and resolve behaviours', function() {

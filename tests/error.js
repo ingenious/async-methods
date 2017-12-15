@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('.error()', function() {
   describe('Synchronous', function() {
@@ -7,6 +7,30 @@ describe('.error()', function() {
       let ep = am.reject({ error: 67 }).error(function(err) {
         return { a: 2 }
       })
+      assert.ok(ep instanceof am.ExtendedPromise)
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, { a: 2 })
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('Synchronous with Class', function() {
+    it('should return extended promise resolving to returned value', function(done) {
+      let ep = am.reject({ error: 67 }).error(
+        'syncMethod',
+        class {
+          syncMethod() {
+            return { a: 2 }
+          }
+        }
+      )
       assert.ok(ep instanceof am.ExtendedPromise)
       assert.ok(
         ep
@@ -38,11 +62,33 @@ describe('.error()', function() {
       )
     })
   })
-  describe('Asynchronous - no returned value from generator', function() {
+  describe('Generator (Asynchronous) - no returned value from generator', function() {
     it('should return extended promise resolving to undefined', function(done) {
       let ep = am.reject({ error: 56 }).error(function*(err) {
         // no return value
       })
+      assert.ok(ep instanceof am.ExtendedPromise)
+
+      ep
+        .then(r => {
+          assert.deepStrictEqual(r, undefined)
+          done()
+        })
+        .catch(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
+    })
+  })
+
+  describe('Class (Synchronous/Asynchronous) - no returned value from generator', function() {
+    it('should return extended promise resolving to undefined', function(done) {
+      let ep = am.reject({ error: 56 }).error(
+        'syncMethod',
+        class {
+          async syncMethod() {}
+        }
+      )
       assert.ok(ep instanceof am.ExtendedPromise)
 
       ep

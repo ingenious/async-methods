@@ -1,5 +1,5 @@
-import assert from 'assert'
-import am from '../am.js'
+var am = require('../am.js'),
+  assert = require('assert')
 
 describe('prev()', function() {
   describe('After map', function() {
@@ -61,11 +61,11 @@ describe('prev()', function() {
           return value * 2
         })
         .wait(200)
-      assert.ok(ep instanceof am.ExtendedPromise)
 
-      ep
         .prev()
+
         .then(r => {
+          assert.ok(ep instanceof am.ExtendedPromise)
           assert.deepStrictEqual(r, { a: 238, b: 56 })
           done()
         })
@@ -182,7 +182,6 @@ describe('prev()', function() {
           done()
         })
         .catch(err => {
-          console.log(109)
           assert.fail('Promise rejected', err)
         })
         .catch(done)
