@@ -31,6 +31,7 @@ as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
 ####  Anonymous classes
 
 ```
+                               
                                                                      
      am(56)
         .next('test', class {
@@ -46,7 +47,7 @@ as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
 ### 2. async-methods Extensions
 
 You can now roll-your-own Extended Promise, adding more methods or changing functionality of exiting methods!
-See ***am-sample-ext.js*** and check out this Mongo extension:  [am-mongo]()
+See ***am-sample-ext.js*** and check out this Mongo extension:  [am-mongo](https://github.com/ingenious/am-mongo)
 
 
 
