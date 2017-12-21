@@ -41,15 +41,15 @@
 #### Extended Promise Extensions enabled
 1.  am._extend(ExtendedPromise) method added
 
-2.  am-sample-extend module added as template
+2.  am-sample-extend.js module added as template
 
 #### ES6 Classes with aysnc/await supported
 
-1. methods am.isClass, am.argumentsHaveClass added
+1. Methods am.isClass(), am.argumentsHaveClass() utitlity added
 
-2. am(method,class) detects and applies named class and method name 
+2. am(method,class) detects and applies detects anonymous class with normal or async methods
 
-3. am(initial) detects anonymous class with normal or async methods
+3. am(initial) detects anonymous or named class and executes the constructor with any arguments
 
 
 
@@ -57,3 +57,6 @@
 
 1. Test for am.race() (Generators) changed
 2. mocha-wepack deprecated in favour of vanilla mocha
+3. Tests added for am.isClass(), am.argumentsHaveClass()
+4. Tests added for sample extension
+5. Tests added for use of named and anonymous classes in next(), forEach(), map(),  mapFilter() and filter()

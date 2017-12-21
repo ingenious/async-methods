@@ -1,40 +1,40 @@
 {
   "name": "async-methods",
-  "keywords":  
-  ["asynchronous", 
-  "async", 
-  "synchronous", 
-  "promise", 
-  "ExtendedPromise", 
-  "chain", 
-  "yield", 
-  "filter", 
-  "forEach", 
-  "map", 
-  "mapfilter", 
-  "generator", 
-  "wait", 
-  "all", 
-  "reject", 
-  "async/await",
-  "await"] ,
-  "author":
-   {
+  "keywords": [
+    "asynchronous",
+    "ES6",
+    "async",
+    "synchronous",
+    "promise",
+    "ExtendedPromise",
+    "chain",
+    "co",
+    "yield",
+    "filter",
+    "forEach",
+    "map",
+    "mapfilter",
+    "generator",
+    "wait",
+    "all",
+    "reject",
+    "async/await",
+    "await"
+  ],
+  "author": {
     "name": "Stephen Giles"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ingenious/async-methods.git"
   },
-  "description": "co-like wrapper for chaining asyncronous and syncronous processes in javascript with support for generators/yield and async/await",
-  "version": "0.1.2",
+  "description": "co-like wrapper for chaining asyncronous and syncronous processes in nodejs with support for generators/yield and async/await",
+  "version": "0.2.0",
   "main": "am.js",
   "dependencies": {},
   "devDependencies": {
-    "mocha": "^4.0.1",
-    "mocha-webpack": "^1.0.1",
-    "webpack": "^3.8.1",
-    "intercept-stdout": "^0.1.2"
+    "intercept-stdout": "^0.1.2",
+    "mocha": "^4.0.1"
   },
   "readmeFilename": "README.md",
   "scripts": {

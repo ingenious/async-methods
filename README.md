@@ -13,7 +13,7 @@
 
 ## Version 0.2.0 has two big additional features:
 
-### 1. Async/Await now supported
+### 1. ES6 Async/Await now supported
 
 As well as generators with ***yield***, async-methods now support named and anonymous classes.  
 
