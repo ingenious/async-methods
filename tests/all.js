@@ -1,6 +1,8 @@
 var am = require('../am.js'),
   assert = require('assert')
 
+
+  
 describe('.all()', function() {
   describe('Array of Generators', function() {
     it('should return extended promise resolving to array of returned value of generator', function(done) {

@@ -1,4 +1,4 @@
-### Version 1.0
+### Version 0.1.0
 
 #### Changes to functionality
 
@@ -36,7 +36,7 @@
 13.  AM class renamed to ExtendedPromise
 
 
-### Version 1.1
+### Version 0.2.0
 
 #### Extended Promise Extensions enabled
 1.  am._extend(ExtendedPromise) method added

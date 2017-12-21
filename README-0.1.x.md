@@ -1,57 +1,32 @@
+#  AM (async-methods)
+
+>Asynchronous Swiss army-knife for wrapping generators and chaining any mix of asyncronous and synchronous processes 
 
 
 
-## Changes in version 0.2.0
+
+```
+
+	am([3, 4, 5]).filter(function* (elem, i) {
+	
+		// yielded async operation
+    		return yield Promise.resolve(4 * i > elem);
+	
+	}).log();
+  	
+	// 5
+  	
+```
+
+## Changes in version 0.1.0
 
 
 [changes.MD](https://github.com/ingenious/async-methods/blob/master/changes.MD)
 
 
-##  README for version 0.1.x
-
-[README-0.1.x.md](https://github.com/ingenious/async-methods/blob/master/README-0.1.x.md)
-
-## Version 0.2.0 has two big additional features:
-
-### 1. Async/Await now supported
-
-As well as generators with ***yield***, async-methods now support named and anonymous classes.  
-
-
-Normal functions, generators and classes can be used interchangeably in
-- ***next()***, 
-- ***forEach()***, 
-- ***map()***, 
-- ***mapFilter()*** and 
-- ***filter()*** methods**  
-
-as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
-
-####  Anonymous classes
-
-```
-                                                                     
-     am(56)
-        .next('test', class {
-            async test(value) {
-              return await Promise.resolve(89 + (value || 0))
-            }
-          })
-        .log()    //  145
-
-```
-
-
-### 2. async-methods Extensions
-
-You can now roll-your-own Extended Promise, adding more methods or changing functionality of exiting methods!
-See ***am-sample-ext.js*** and check out this Mongo extension:  [am-mongo]()
-
-
-
 ## How it works
 
-#### 1. Harnessing the flexibity of ES6 generators with yield and async methods with await 
+#### 1. Harnessing the flexibity of ES6 generators
 **am** is a function that can wrap  generators, promises, arrays, objects and other entities, always returning an Extended Promise.  The Extended Promise has extra set of methods which allow asynchronous operations to be intuitively chained.  
 
 #### 2. Mix sync and async operations
@@ -83,7 +58,6 @@ In package.json
 ```
                                                                                                                                 
 	"async-methods":"^0.1.0"
-	
 ```
 
 In console
@@ -91,16 +65,12 @@ In console
 ```
                                                          
 	> npm install --save async-methods
-
 ```
-
 In code
-
 
 ```
                                                          
 	let am=require('async-methods');
-
 ```
 ## Wrapping
 
@@ -134,8 +104,6 @@ asynchronous
    // ​​​​​filter asyncronous, [204ms] [ 33,  555 ]​​​​​
 
 ```
-#### Wrapping non-object
-
 ```
                                                          
    am(4).timeout(200).filter(function* (value) {
@@ -207,7 +175,6 @@ asynchronous
     // function with callback '= am';​​​​​
 ```
 
-
 **am(generator)**  => returns Extended Promise (in same way as to 'co')
 
 ```
@@ -250,12 +217,8 @@ asynchronous
 
 ```
 
-**am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)** 
-
-returns Extended Promise that returns arguments of the success callback to **next()** or **then()** and passes the argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
-
+**am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)** =>Extended Promise that returns arguments of the success callback and passes and argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 **WRAP a success/failure function**
-
 ```
                                                          
 let sf = function (a, success, fail) {
@@ -279,11 +242,11 @@ am.sfFn(sf, 1).next(function (r) {
 // 1
 
 ```
-**am(&lt;Extended Promise&gt;)** => identity
+**am(<Extended Promise>)** => identity
 
 ## Methods
 
-> In all cases **fn** can be a **generator** or a normal function (for analagous synchronous operation)  A class can be used using syntax .next(methodName,class).  `this gives access to ***async/await***
+> In all cases **fn** can be a **generator** or a normal function (for analagous synchronous operation)
 
 *tolerant*  argument allows for the map or filter to complete even if there is an error
 
@@ -296,8 +259,6 @@ am.sfFn(sf, 1).next(function (r) {
 
 equivalent to <array>.map().  If the previous stage of the chain resolves to an *array* or *object*, ecah element of the array or object is replaced with the returned result of the function or generator
 
-#### Synchronous
-
 ```
                                                          
 am(Promise.resolve([45, 67]))
@@ -309,38 +270,12 @@ am(Promise.resolve([45, 67]))
 // map Promise result  [ 4.5, 6.7 ]​​​​​
 
 ```
-####  Anonymous class with async/await
-
-```
-                                                         
-     am([4, 5, 6])
-        .map(
-          'asyncMap',
-          class {
-            async asyncMap(value) {
-              return await Promise.resolve(2 * value)
-            }
-          }
-        )
-        .map(
-          'syncMap',
-          class {
-            syncMap(value) {
-              return 3 * value
-            }
-          }
-        )
-        .log()   //  [24, 30, 36]
-
-```
 
 ### .filter(fn, tolerant)
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
 *Filter can be applied to objects and other entitites as well as arrays
-
-#### Synchronous
 
 ```
                                                          
@@ -353,9 +288,6 @@ am(7).filter(function (value) {
 
 ```
 
-####  Generator/yield
-
-
 ```
                                                          
 am(7).filter(function* (value) {
@@ -366,32 +298,7 @@ am(7).filter(function* (value) {
 // 7
 
 ```
-####  Async/await
-
-```
-                                                         
-     am({ a: 4, b: 5, c: 6 })
-        .filter(
-          'asyncMap',
-          class {
-            async asyncMap(value, attr) {
-              return await Promise.resolve(value < 5 ? false : true)
-            }
-          }
-        )
-        .filter(
-          'syncMap',
-          class {
-            syncMap(value, attr) {
-              return value === 6 ? false : 2 * value
-            }
-          }
-        )
-        .log()    /// {b:5}
-
-```
-
-#### filter object
+*filter object*
 
 ```
                                                          
@@ -418,34 +325,15 @@ If the mapping function for an element returns false, then the element is exclud
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
 
-####  synchronous
-
 ```
                                                          
-     am([3, 4, 5])
-       .mapFilter(function (value, i) {
-         let a= 2 * value + i;
-         return a > 6 ? a :false;
-       })
-       .log('mapfilter');         \\   mapfilter [ 9, 12 ]​​​​​
+am([3, 4, 5]).mapFilter(function (value, i) {
+  let a= 2 * value + i;
+  return a > 6 ? a :false;
+}).log('mapfilter');
 
-```
-
-####  Asynchronous using Anonymous class
-
-```
-           
-    am([4, 5, 6])
-        .mapFilter('asyncMap', class {
-            async asyncMap(value) {
-              return value < 5 ? false : await Promise.resolve(2 * value)
-            }
-          })
-        .mapFilter('syncMap', class {
-            syncMap(value) {
-              return value === 10 ? false : 2 * value
-            }
-          }).log()  // [24]
+\\ logs 
+\\   mapfilter [ 9, 12 ]​​​​​
 
 ```
 
@@ -456,7 +344,7 @@ If the mapping function for an element returns false, then the element is exclud
 forEach returns an extended Promise resolving to the initial array or objectx
 
 
-#### synchronous
+*synchronous*
 
 ```
                                                          
@@ -473,7 +361,7 @@ am([34, 56, 78]).forEach(function (value, i) {
 ```
 
 
-####generator/yield
+*asynchronous*
 
 ```
                                                          
@@ -486,36 +374,9 @@ am([34, 56, 78]).forEach(function* (value, i) {
 // 112 1
 // 156 2
 
-```
-
-#### Class with async/await
 
 ```
-                                                                
-                                                                
-    let test = []
-      am(66)
-        .forEach('asyncMap', class {
-            async asyncMap(value, i) {
-              test.push(await Promise.resolve(value))
-            }
-          }
-        )
-        .forEach('syncMap',class {
-            syncMap(value, i) {
-              test.push(2 * value)
-            }
-          })
-        .next(function(){
-                
-            console.log(test)  // [66,132]
-        })
-
-```
-
-
-
-#### Object applied to .forEach 
+*object*
 
 ```
                                                          
@@ -537,56 +398,6 @@ am({
 ### .next(fn)
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
-
-#### Anonymous class
-
-```
-                                                                     
-     am(56)
-        .next('test', class {
-            async test(value) {
-              return await Promise.resolve(89 + (value || 0))
-            }
-          })
-        .log()    //  145
-
-```
-#### Named class
-
-```
-                                                                    
-      let sample = class {
-        async test(value) {
-          return await Promise.resolve(89 + (value || 0))
-        }
-      }
-      let ep = am(56)
-        .next('test', sample)
-        .log()   //145
-
-```
-
-####  Named class with arguments for constructor and method
-
-```
-                                                                  
-    let sample = class {
-        constructor(type) {
-          this.type = type
-        }
-        async test(value) {
-          return await Promise.resolve(89 + (this.type || 0) + (value || 0))
-        }
-      }
-      let ep = am(56)
-        .next('test', new sample(45))
-        .next(r => {
-          
-          console.log(r)        // 190  (45 + 89 + 56)
-          done()
-        })
-  
-```
 
 ### .timeout(ms)
 
@@ -611,7 +422,7 @@ am({
       // logs
       // ​​​​​wait [3003ms] 1​​​​​
 ```
-### .log(&lt;success label&gt;[,&lt;error label&gt;'[,Error()]])
+### .log(<success label>[,<error label>[,Error()]])
 
 *Adding Error() as last attribute will allow log to add the line number
 and filename to log of success values as well as errors
@@ -655,7 +466,6 @@ error occurs that result or error will be passed to the enxt stage of the chain.
                                                          
 ### .promise() 
 Converts an Extended Promise to a normal promise (with methods catch and then)
-
 ```
                                                          
    am([2, 3, 4]).next(function () {}).log()
@@ -667,14 +477,13 @@ Converts an Extended Promise to a normal promise (with methods catch and then)
       });
    //logs
    // Promise resolves with [2,3,4]
-   
 
 ```
 
 
 ### .then(fn)
 
-Similar to **<Promise>.then() but returns an Extended Promise.
+Identical to **<Promise>.then() but returns an Extended Promise.
 If want **fn** to be a generator use **.next()**
 
 ### .catch(fn)
@@ -682,9 +491,9 @@ If want **fn** to be a generator use **.next()**
 Identical to **<Promise>.catch() but returns a chainable Extended Promise.
 If want **fn** to be a generator use **.error()**
 
-## Static methods
+## Extensions 
 
->All static methods return a chainable Extended Promise
+>All extension methods return a chainable Extended Promise
 
 *async module replacement*
 
@@ -723,8 +532,7 @@ am.waterfall({
 ```
 
 #### am.forEach(array,fn) 
-where fn is either a function that accepts a callback, or a generator. Anonymous and named claes can also be used to access ***async/await***
-
+where fn is either a function that accepts a callback, or a generator
 ```
                                                          
    am.forEach([3, 4, 5], function (value, cb) {
@@ -740,7 +548,7 @@ where fn is either a function that accepts a callback, or a generator. Anonymous
 ```
 
 
-### Promise method equivalents
+*Promise method equivalents*
 
 These methods have same functionality as their Promise equivalents but return a chainable Extended Promise rather than a normal Promise
 
@@ -778,7 +586,6 @@ These methods have same functionality as their Promise equivalents but return a 
 #### am.all([&lt;am-wrappable>,&lt;am-wrappable>,..])
 
 *am.all()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps 
-
 ```
                                                          
      am.all([
@@ -813,7 +620,6 @@ These methods have same functionality as their Promise equivalents but return a 
 #### am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
 
 *am.race()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps
-
 ```
                                                          
    am.race({
@@ -828,71 +634,14 @@ These methods have same functionality as their Promise equivalents but return a 
 
 ```
 
-
-##  Utility methods
-
--  am.isPromise(entity)
--  am.isGenerator(entity)
--  am.isNextable(entity) 
--  am.isIterable(entity) 
--  am.isObject(entity)
--  am.isArray(entity)
--  am.isClass(entity)
-
-### am.argumentsHaveClass(args)
-
-```
-                                           
-      let test, tester = function() {
-        return am.argumentsHaveClass(arguments)
-      }
-
-      test = tester([234, 567])
-      console.log(test)   // false
-      
-      test = tester('test', class {
-          test(arg1, arg2) {
-            return arg1 * arg2
-          }},4,5)
-      console.log(test)  
-      /* 
-      {  classFn: [Function],
-            classObject: undefined,
-            methodName: 'test',
-            args: [ 4, 5 ]
-         }
-      */
-
-
-```
-
-###  am._extend(ExtendedPromise)
-####  For use in creating an extension
-
-See **am-sample-ext.js** for more explanation
-
-
-```
-      let asyncMethods=require('async-methods'),
-      extendedAm = asyncMethods._extend(new ExtendedPromise)
-```
-
 ## Tests
 
-There are 169 automated unit and functional tests
+There are 130 automated functional tests
 
 ```
-                                                
     $  npm test
-    
 
 ```
 
-#### Test extension template only
-```
-                                                
-    $  npm run test-extend
-    
 
-```
 

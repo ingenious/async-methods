@@ -89,7 +89,6 @@ describe('.filter()', () => {
           }
         )
         .next(r => {
-          console.log(92, r)
           assert.deepEqual(r, 546)
           done()
         })

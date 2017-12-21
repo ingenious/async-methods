@@ -26,13 +26,13 @@ class ExtendedPromise extends Promise {
       newContext[attr] = self._state_[attr]
     }
     newContext.prev = self
-    newContext.nexted = newContext.db || 'no db'
+
     return am.ExtendedPromise._chain(self, newContext)(function(resolve, reject, result, err) {
       if (err) {
         reject(err)
       } else {
         // synchronous step
-        if (typeof fn === 'function' && !am.isGenerator(fn)) {
+        if (!argsHaveClass && typeof fn === 'function' && !am.isGenerator(fn)) {
           let newResult = fn.apply(self, [result])
 
           // if function doesnt return passs through
@@ -57,8 +57,11 @@ class ExtendedPromise extends Promise {
           let newResult
           try {
             newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, [result])
+
             // in case newResult is Promise
-            newResult.next(resolve).catch(reject)
+            am(newResult)
+              .next(resolve)
+              .catch(reject)
           } catch (e) {
             console.log(67, e)
             reject(e)
@@ -601,15 +604,13 @@ class ExtendedPromise extends Promise {
       newedClass,
       self = this
     if (argsHaveClass.classFn && argsHaveClass.methodName) {
-      // .next(method,Class)
       try {
         newedClass = new argsHaveClass.classFn()
         wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(newedClass, args))
       } catch (e) {
-        newResult = am.reject(e)
+        wrappedNewResult = am.reject(e)
       }
     } else if (argsHaveClass.classObject && argsHaveClass.methodName) {
-      // .next(method,new Class())
       try {
         wrappedNewResult = am(
           argsHaveClass.classObject[argsHaveClass.methodName].apply(argsHaveClass.classObject, args)
@@ -620,9 +621,10 @@ class ExtendedPromise extends Promise {
     } else if (argsHaveClass.classFn) {
       // .next(Class)
       // new the class with the arguments provided
+
       try {
         wrappedNewResult = am(
-          new (Function.prototype.bind.apply(argsHaveClass.classFn, args))()
+          new (Function.prototype.bind.apply(argsHaveClass.classFn, [self].concat(args)))()
         ).next(function(newResult) {
           if (typeof newResult === 'function') {
             return am.fn(newResult)
@@ -631,7 +633,7 @@ class ExtendedPromise extends Promise {
           }
         })
       } catch (e) {
-        newResult = am.reject(e)
+        wrappedNewResult = am.reject(e)
       }
     }
     return wrappedNewResult
@@ -1196,8 +1198,10 @@ am._extend = function(extendedPromise) {
   am.methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(am()))
     .slice(1)
     .concat(superMethodNames)
+
   return am
 }
 am.methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(am())).slice(1)
 am.ExtendedPromise = ExtendedPromise
+
 module.exports = am
