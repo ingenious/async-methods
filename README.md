@@ -15,15 +15,16 @@
 
 ### 1. ES6 Async/Await now supported
 
-As well as generators with ***yield***, async-methods now support named and anonymous classes.  
+As well as ***generators with yield***, async-methods now support ***named and anonymous classes***.  
 
 
 Normal functions, generators and classes can be used interchangeably in
-- ***next()***, 
-- ***forEach()***, 
-- ***map()***, 
+
+- **next()**, 
+- **forEach()**, 
+- **map()**, 
 - ***mapFilter()*** and 
-- ***filter()*** methods**  
+- ***filter()*** methods
 
 as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
 
