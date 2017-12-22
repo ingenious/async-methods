@@ -1,7 +1,5 @@
 
-
-
-## Changes in version 0.2.0
+## Changes in version 0.2.x
 
 
 [changes.MD](https://github.com/ingenious/async-methods/blob/master/changes.MD)
@@ -31,8 +29,7 @@ as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
 ####  Anonymous classes
 
 ```
-                               
-                                                                     
+                                                                                                                                                   
      am(56)
         .next('test', class {
             async test(value) {
@@ -40,10 +37,8 @@ as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
             }
           })
         .log()    //  145
-
+  
 ```
-
-
 ### 2. async-methods Extensions
 
 You can now roll-your-own Extended Promise, adding more methods or changing functionality of exiting methods!
@@ -91,18 +86,18 @@ In package.json
 In console
 
 ```
-                                                         
+                                                                              
 	> npm install --save async-methods
-
+  
 ```
 
 In code
 
 
 ```
-                                                         
+                                                                              
 	let am=require('async-methods');
-
+  
 ```
 ## Wrapping
 
@@ -113,7 +108,7 @@ In code
 synchronous
 
 ```
-                                                         
+                                                                              
    am([3, 4, 5]).mapFilter(function (value, i) {
 
      return 2 * value + i;
@@ -121,12 +116,12 @@ synchronous
    }).log('array wrapper);
 
    //  array wrapper [15ms] [ 6, 9, 12 ]​​​​​
-
+  
 ```
 asynchronous
 
 ```
-                                                         
+                                                                              
    am([33, 4, 555]).wait(200).filter(function* (value) {
    
      return yield am.resolve(4 - value);
@@ -134,25 +129,27 @@ asynchronous
    }).log('filter asyncronous,');
 
    // ​​​​​filter asyncronous, [204ms] [ 33,  555 ]​​​​​
-
+  
 ```
 #### Wrapping non-object
 
 ```
-                                                         
-   am(4).timeout(200).filter(function* (value) {
+                                                                                        
+                                                                                           am(4).timeout(200).filter(function* (value) {
    
       return yield am.resolve(4 - value);
    
    }).log('filter asyncronous non-object');
 
    // filter asyncronous non-object [204ms]  null
-
+  
 ```
+
 **am({a:3})** => Extended Promise that returns an object.
 
+
 ```
-                                                         
+                                                                              
    am({ a: 34, b: 56, c: 78})
    
    .forEach(function (value, attr) {
@@ -160,13 +157,13 @@ asynchronous
        console.log(value, attr);// a 34 b 56 c 78
 
     }).log();
-
+  
 ```
 
 **am(iterator)**  => Extended Promise which returns the result of the iterator 
 
 ```
-                                                         
+                                                                              
    am(function*(a,b){
       a+=b;
       return yield a;
@@ -174,18 +171,23 @@ asynchronous
     .log('iterator');
     
     // iterator 100
+    
 ```
+
 [Iteration protocols](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols)
+
 
 **am(&lt;boolean | string | null&gt;)** => Extended Promise that returns entitity
 
+
 ```
-                                                         
+                                                                              
    am(true).filter(function*(value){
      return value;
    }).log('other')
 
 // 'other' true
+  
 ```
                                                          
 
@@ -194,8 +196,7 @@ asynchronous
 **am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)** => Extended Promise that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
 ```
-
-                                                         
+                                                                              
    am(fs.readFile, __dirname + '/am.js')
   
      .then(function (content) {
@@ -207,13 +208,14 @@ asynchronous
      .log('function with callback');
 
     // function with callback '= am';​​​​​
+  
 ```
 
 
 **am(generator)**  => returns Extended Promise (in same way as to 'co')
 
 ```
-                                                         
+                                                                              
    am(function* () {
      
       return yield {
@@ -232,13 +234,13 @@ asynchronous
 
   // logs: 
   // yield object with async attributes { b: 'bb', a: { b: 'bb', a: { b: 'bb', c: 'cc' } } }​​​​​
-
+  
 ```
 
 **am(&lt;Promise&gt;)**  => returns chainable Extended Promise
 
 ```
-                                                         
+                                                                              
    am(Promise.resolve([45,67]))
     
       .map(function(item){
@@ -249,7 +251,7 @@ asynchronous
 
    // logs
    // wrap promise  [ 4.5, 6.7 ]​​​​​
-
+  
 ```
 
 **am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)** 
@@ -259,7 +261,7 @@ returns Extended Promise that returns arguments of the success callback to **nex
 **WRAP a success/failure function**
 
 ```
-                                                         
+                                                                              
 let sf = function (a, success, fail) {
     if (a < 10) {
         success(a);
@@ -279,8 +281,9 @@ am.sfFn(sf, 1).next(function (r) {
 });
 // logs
 // 1
-
+  
 ```
+
 **am(&lt;Extended Promise&gt;)** => identity
 
 ## Methods
@@ -291,7 +294,6 @@ am.sfFn(sf, 1).next(function (r) {
 
 *Returning a chainable Extended Promise*
 
-
 ### .map(fn,tolerant)
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
@@ -301,7 +303,7 @@ equivalent to <array>.map().  If the previous stage of the chain resolves to an 
 #### Synchronous
 
 ```
-                                                         
+                                                                              
 am(Promise.resolve([45, 67]))
   .map(function (item) {
     return item / 10;
@@ -309,12 +311,13 @@ am(Promise.resolve([45, 67]))
 
 // logs
 // map Promise result  [ 4.5, 6.7 ]​​​​​
-
+  
 ```
+
 ####  Anonymous class with async/await
 
 ```
-                                                         
+                                                                              
      am([4, 5, 6])
         .map(
           'asyncMap',
@@ -333,7 +336,7 @@ am(Promise.resolve([45, 67]))
           }
         )
         .log()   //  [24, 30, 36]
-
+  
 ```
 
 ### .filter(fn, tolerant)
@@ -345,33 +348,33 @@ am(Promise.resolve([45, 67]))
 #### Synchronous
 
 ```
-                                                         
+                                                                              
 am(7).filter(function (value) {
   return 7 - value;
 }).log();
 
 // logs
 // null
-
+  
 ```
 
 ####  Generator/yield
 
-
 ```
-                                                         
+                                                                              
 am(7).filter(function* (value) {
   return yield(8 - value);
 }).log();
 
 // logs
 // 7
-
+  
 ```
+
 ####  Async/await
 
 ```
-                                                         
+                                                                              
      am({ a: 4, b: 5, c: 6 })
         .filter(
           'asyncMap',
@@ -390,13 +393,13 @@ am(7).filter(function* (value) {
           }
         )
         .log()    /// {b:5}
-
+  
 ```
 
 #### filter object
 
 ```
-                                                         
+                                                                              
 am({
     a: 27,
     b: 78
@@ -408,7 +411,7 @@ am({
 
 // logs
 // ​​​​​object filter  { b: 78 }​​​​​
-
+  
 ```
 
 
@@ -423,20 +426,20 @@ If the mapping function for an element returns false, then the element is exclud
 ####  synchronous
 
 ```
-                                                         
+                                                                              
      am([3, 4, 5])
        .mapFilter(function (value, i) {
          let a= 2 * value + i;
          return a > 6 ? a :false;
        })
        .log('mapfilter');         \\   mapfilter [ 9, 12 ]​​​​​
-
+  
 ```
 
 ####  Asynchronous using Anonymous class
 
 ```
-           
+                                                                              
     am([4, 5, 6])
         .mapFilter('asyncMap', class {
             async asyncMap(value) {
@@ -448,7 +451,7 @@ If the mapping function for an element returns false, then the element is exclud
               return value === 10 ? false : 2 * value
             }
           }).log()  // [24]
-
+  
 ```
 
 ### .forEach(fn)
@@ -457,11 +460,10 @@ If the mapping function for an element returns false, then the element is exclud
 
 forEach returns an extended Promise resolving to the initial array or objectx
 
-
 #### synchronous
 
 ```
-                                                         
+                                                                              
 am([34, 56, 78]).forEach(function (value, i) {
   console.log(value, i);
 }).log();
@@ -471,14 +473,13 @@ am([34, 56, 78]).forEach(function (value, i) {
 //  56 1 
 //  78 2
 //  [34, 56, 78]
-
+  
 ```
-
 
 ####generator/yield
 
 ```
-                                                         
+                                                                              
 am([34, 56, 78]).forEach(function* (value, i) {
   console.log(yield am.resolve(2 * value),i);
 }).log();
@@ -487,14 +488,13 @@ am([34, 56, 78]).forEach(function* (value, i) {
 //  68 0
 // 112 1
 // 156 2
-
+  
 ```
 
 #### Class with async/await
 
-```
-                                                                
-                                                                
+```                                                                
+                                                                              
     let test = []
       am(66)
         .forEach('asyncMap', class {
@@ -512,15 +512,13 @@ am([34, 56, 78]).forEach(function* (value, i) {
                 
             console.log(test)  // [66,132]
         })
-
+  
 ```
-
-
 
 #### Object applied to .forEach 
 
 ```
-                                                         
+                                                                              
 am({
   a: 34,
   b: 56,
@@ -532,9 +530,8 @@ am({
 // logs
 // ​​​​​102 'a'​​​​​, 168 'b'​​​​​, 234 'c'​​​​​ 
 //  ​​​​​object async  { a: 34, b: 56, c: 78 }​​​​​
-
+  
 ```
-
 
 ### .next(fn)
 
@@ -543,7 +540,7 @@ am({
 #### Anonymous class
 
 ```
-                                                                     
+                                                                              
      am(56)
         .next('test', class {
             async test(value) {
@@ -551,12 +548,13 @@ am({
             }
           })
         .log()    //  145
-
+  
 ```
+
 #### Named class
 
 ```
-                                                                    
+                                                                              
       let sample = class {
         async test(value) {
           return await Promise.resolve(89 + (value || 0))
@@ -565,13 +563,13 @@ am({
       let ep = am(56)
         .next('test', sample)
         .log()   //145
-
+  
 ```
 
 ####  Named class with arguments for constructor and method
 
 ```
-                                                                  
+                                                                              
     let sample = class {
         constructor(type) {
           this.type = type
@@ -593,7 +591,7 @@ am({
 ### .timeout(ms)
 
 ```
-                                                         
+                                                                              
     am.waterfall([
       am.resolve(999).timeout(2000),
       am.resolve(8).timeout(1000)
@@ -602,27 +600,35 @@ am({
 
     // logs
     //  ​​​​waterfall [2002ms] [ 999, 8 ]​​​​​
-
+  
 ```
 
 ### .wait(ms) (*identical to timeout*)
+
 ```
-                                                         
+                                                                              
       am.sfFn(sf, 1).wait(3000).log('wait');
       
       // logs
       // ​​​​​wait [3003ms] 1​​​​​
+      
+
 ```
+
 ### .log(&lt;success label&gt;[,&lt;error label&gt;'[,Error()]])
 
 *Adding Error() as last attribute will allow log to add the line number
 and filename to log of success values as well as errors
 
+```
+                                                                              
   am.sfFn(sf, 1).wait(3000)
     .log('with line no. ', Error());
 
 ​ ​​​​ // logs
   // ​​​​​with line no.   line 12  of async-methods/test-4.js 1​​​​​
+  
+```
 
 ### .error(fn)
 
@@ -634,7 +640,7 @@ If the function or generator returns something other than undefined or an
 error occurs that result or error will be passed to the enxt stage of the chain.
 
 ```
-                                                         
+                                                                              
    am.waterfall({
       a: am.reject(88),
       b: function (result, cb) {
@@ -656,10 +662,12 @@ error occurs that result or error will be passed to the enxt stage of the chain.
 ```
                                                          
 ### .promise() 
+
 Converts an Extended Promise to a normal promise (with methods catch and then)
 
+
 ```
-                                                         
+                                                                              
    am([2, 3, 4]).next(function () {}).log()
       .promise()
       .then(function (result) {
@@ -670,18 +678,18 @@ Converts an Extended Promise to a normal promise (with methods catch and then)
    //logs
    // Promise resolves with [2,3,4]
    
-
 ```
-
 
 ### .then(fn)
 
 Similar to **<Promise>.then() but returns an Extended Promise.
+
 If want **fn** to be a generator use **.next()**
 
 ### .catch(fn)
 
-Identical to **<Promise>.catch() but returns a chainable Extended Promise.
+Identical to **<Promise>.catch()** but returns a chainable Extended Promise.
+
 If want **fn** to be a generator use **.error()**
 
 ## Static methods
@@ -693,7 +701,7 @@ If want **fn** to be a generator use **.error()**
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
 
 ```
-                                                         
+                                                                              
 am.waterfall({
   a: am.reject(88),
   b: function (result, cb) {
@@ -708,13 +716,13 @@ am.waterfall({
   return am.reject(new Error('no gogod'));
 }).log('waterfall object', 'waterfall err');
 
-```
 
+```
 
 #### am.parallel([&lt;am-able>,&lt;am-able>,..])
 
 ```
-                                                         
+                                                                              
    am.parallel([Promise.resolve(45), Promise.resolve(67)])
    
    .log('parallel');
@@ -722,25 +730,24 @@ am.waterfall({
    // logs
    // ​​​​​parallel [ 45, 67 ]​​​​​
 
+
 ```
 
 #### am.forEach(array,fn) 
 where fn is either a function that accepts a callback, or a generator. Anonymous and named claes can also be used to access ***async/await***
 
 ```
-                                                         
+                                                                              
    am.forEach([3, 4, 5], function (value, cb) {
      cb(null, 2 * value);
    }).log('sync forEach test result');
-
-   
 
    am.forEach([3, 4, 5], function* (value) {
      return yield Promise.resolve(2 * value);
    }).log('async forEach test result'); 
 
-```
 
+```
 
 ### Promise method equivalents
 
@@ -749,7 +756,7 @@ These methods have same functionality as their Promise equivalents but return a 
 #### am.resolve(value)
 
 ```
-                                                         
+                                                                              
    am.resolve(Promise.resolve(67))
 
      .then(function () {
@@ -759,11 +766,14 @@ These methods have same functionality as their Promise equivalents but return a 
     // logs
     // 67
 
-```
-#### am.reject(err)
 
 ```
-                                                         
+
+#### am.reject(err)
+
+
+```
+                                                                              
    am.reject({message:'no result'})
    
    .catch(function(err){
@@ -774,15 +784,15 @@ These methods have same functionality as their Promise equivalents but return a 
    // logs
    // ​​​​​{ message: 'no result' }​​​​​
 
-```
 
+```
 
 #### am.all([&lt;am-wrappable>,&lt;am-wrappable>,..])
 
 *am.all()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps 
 
 ```
-                                                         
+                                                                              
      am.all([
         4,
         Promise.reject(56),
@@ -810,6 +820,7 @@ These methods have same functionality as their Promise equivalents but return a 
 // logs
 //  56
 
+
 ```
 
 #### am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
@@ -817,7 +828,7 @@ These methods have same functionality as their Promise equivalents but return a 
 *am.race()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps
 
 ```
-                                                         
+                                                                              
    am.race({
    
      a: Promise.resolve(56),
@@ -827,6 +838,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 // logs
 // race 45
+
 
 ```
 
@@ -844,7 +856,7 @@ These methods have same functionality as their Promise equivalents but return a 
 ### am.argumentsHaveClass(args)
 
 ```
-                                           
+                                                                              
       let test, tester = function() {
         return am.argumentsHaveClass(arguments)
       }
@@ -875,8 +887,10 @@ See **am-sample-ext.js** for more explanation
 
 
 ```
+                                                                              
       let asyncMethods=require('async-methods'),
       extendedAm = asyncMethods._extend(new ExtendedPromise)
+      
 ```
 
 ## Tests
@@ -884,17 +898,16 @@ See **am-sample-ext.js** for more explanation
 There are 169 automated unit and functional tests
 
 ```
-                                                
+                                                                              
     $  npm test
     
-
 ```
 
 #### Test extension template only
+
 ```
-                                                
+                                                                              
     $  npm run test-extend
     
-
 ```
 
