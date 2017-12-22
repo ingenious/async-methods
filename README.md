@@ -79,7 +79,7 @@ In package.json
 
 ```
                                                                                                                                 
-	"async-methods":"^0.1.0"
+	"async-methods":"^0.2.3"
 	
 ```
 
@@ -87,7 +87,7 @@ In console
 
 ```
                                                                               
-	> npm install --save async-methods
+	$ npm install async-methods -P
   
 ```
 
