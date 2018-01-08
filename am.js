@@ -63,7 +63,6 @@ class ExtendedPromise extends Promise {
               .next(resolve)
               .catch(reject)
           } catch (e) {
-            console.log(67, e)
             reject(e)
           }
         } else {
@@ -604,13 +603,15 @@ class ExtendedPromise extends Promise {
       newedClass,
       self = this
     if (argsHaveClass.classFn && argsHaveClass.methodName) {
+      // class with specified method (new first)
       try {
         newedClass = new argsHaveClass.classFn()
-        wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(newedClass, args))
+        wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(self, args))
       } catch (e) {
         wrappedNewResult = am.reject(e)
       }
     } else if (argsHaveClass.classObject && argsHaveClass.methodName) {
+      // newed class with specified method
       try {
         wrappedNewResult = am(
           argsHaveClass.classObject[argsHaveClass.methodName].apply(argsHaveClass.classObject, args)
@@ -620,11 +621,11 @@ class ExtendedPromise extends Promise {
       }
     } else if (argsHaveClass.classFn) {
       // .next(Class)
-      // new the class with the arguments provided
+      // new the class constructor with the arguments provided
 
       try {
         wrappedNewResult = am(
-          new (Function.prototype.bind.apply(argsHaveClass.classFn, [self].concat(args)))()
+          new (Function.prototype.bind.apply(argsHaveClass.classFn, [{}].concat(args)))()
         ).next(function(newResult) {
           if (typeof newResult === 'function') {
             return am.fn(newResult)
@@ -694,6 +695,7 @@ am = function(initial) {
   }
 
   let argsHaveClass = am.argumentsHaveClass([arguments[0]].concat(args))
+
   if (argsHaveClass) {
     //
     // Wrap Class
@@ -824,6 +826,7 @@ am.argumentsHaveClass = function(argsIn) {
     methodName = args[0]
     args.shift()
   }
+
   // newed Class
   if (typeof args[0] === 'object' && am.isClass(args[0].constructor)) {
     classObject = args[0]
@@ -835,9 +838,36 @@ am.argumentsHaveClass = function(argsIn) {
     args.shift()
   }
 
+  if (
+    typeof args[1] === 'object' &&
+    am.isClass(args[1].constructor) &&
+    methodName &&
+    args[1][args[0]]
+  ) {
+    classObject = args[1]
+    args.splice(1, 1)
+  }
+
+  if (
+    typeof args[1] === 'function' &&
+    am.isClass(args[1]) &&
+    methodName &&
+    args[1].prototype[args[0]]
+  ) {
+    classFn = args[1]
+    args.splice(1, 1)
+  }
+  if (typeof args[1] === 'string' && typeof args[0] === 'function' && args[0].prototype[args[1]]) {
+    methodName = args[1]
+    args.splice(1, 1)
+  }
+  if (typeof args[1] === 'string' && typeof args[0] === 'object' && args[0][args[1]]) {
+    methodName = args[1]
+    args.splice(1, 1)
+  }
+
   return classObject || classFn ? { classFn, classObject, methodName, args } : false
 }
-
 // interpret Generator
 am.co = function() {
   let iterable,
