@@ -119,7 +119,9 @@ synchronous
    //  array wrapper [15ms] [ 6, 9, 12 ]​​​​​
   
 ```
+
 asynchronous
+
 
 ```javascript
                                                                                       
