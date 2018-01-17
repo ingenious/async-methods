@@ -1,80 +1,75 @@
 # async-methods (am)
 
-> * Aids developer productivity by producing async processes within applications that are robust and with clear logic 
+## Changes in version 0.2.x
 
-> * Eliminates indenting from complex async handlers making them easier to read and maintain
-
-> * Can replaces 'caolan/async' package with ES6 native promise-based code and replicate 'jongleberry/co' package fucntionality but  with extended options
-
-> * 191 unit and functional tests covering all use cases
-
-> * Supports **async/await** with optional **Asyncronous steps in ES6 Class** pattern/layout which allows mixing of **async** methods or generators with **yield** or synchronous normal functions.
-
-> * Extensible.  easily add additional *Extended Promise* methods
-
-## Changes in version 0.2.5
 
 [changes.MD](https://github.com/ingenious/async-methods/blob/master/changes.MD)
-
-1. **.twoPrev()** and **.threePrev()** added with associated tests
-
-2. New documentation of 'asyncronous steps in ES6 Class' pattern
 
 
 ##  README for version 0.1.x
 
 [README-0.1.x.md](https://github.com/ingenious/async-methods/blob/master/README-0.1.x.md)
 
-##  README for version 0.2.0
+## Version 0.2.0 has two big additional features:
 
-[README-0.2.0.md](https://github.com/ingenious/async-methods/blob/master/README-0.2.0.md)
+### 1. ES6 Async/Await now supported
+
+As well as ***generators with yield***, async-methods now support ***named and anonymous classes***.  
+
+
+Normal functions, generators and classes can be used interchangeably in
+
+- **next()**, 
+- **forEach()**, 
+- **map()**, 
+- ***mapFilter()*** and 
+- ***filter()*** methods
+
+as well as in an initial wrap eg  ***am(method,class)***  or ***am(class)***
+
+####  Anonymous classes
+
+```javascript
+                                                                                      
+     am(56)
+        .next('test', class {
+            async test(value) {
+              return await Promise.resolve(89 + (value || 0))
+            }
+          })
+        .log()    //  145
+  
+```
+### 2. async-methods Extensions
+
+You can now roll-your-own Extended Promise, adding more methods or changing functionality of exiting methods!
+See ***am-sample-ext.js*** and check out this Mongo extension:  [am-mongo](https://github.com/ingenious/am-mongo)
+
+
 
 ## How it works
 
-1. ### Wrapping
-	am() can be used to wrap various types of entities such as generators, classes, promises, functions-with-callback etc. to generate an *Extended Promise*.  Every *Extended Promise* has the same set of chainable methods available to manipulate the resolved and/or rejected values
-	
-	*Chainable methods*
-	- [next(&lt;fn | generator | (methodName,class)&gt;)](#.next())
-	- [error(&lt;fn | generator | (methodName,class)&gt;)](#.error())
-	- [forEach(&lt;fn | generator | (methodName,class)&gt;)](#.forEach)
-	- [map(&lt;fn | generator | (methodName,class)&gt;)](#.map())
-	- [mapFilter(&lt;fn | generator | (methodName,class)&gt;)](#.mapFilter())
-	- [filter(&lt;fn | generator | (methodName,class)&gt;)](#.filter())
-	- [twoPrev(&lt;fn | generator | (methodName,class)&gt;)](#.twoPrev())
-	- [threePrev(&lt;fn | generator | (methodName,class)&gt;)](#.threePrev())
-	- [prev()](#.prev())
+#### 1. Harnessing the flexibity of ES6 generators with yield and async methods with await 
+**am** is a function that can wrap  generators, promises, arrays, objects and other entities, always returning an Extended Promise.  The Extended Promise has extra set of methods which allow asynchronous operations to be intuitively chained.  
 
-      More: [.log()](#.log()), [.wait()](#.wait()), [.timeout()](#.timeout()), [.catch()](#.catch()), [.then()](#.then()), [.promise()](#.promise()) 
+#### 2. Mix sync and async operations
+Most methods accept either a generator which can host a sequence of asyncronous operations using **yield** or a normal function which will have same function but operate synchronously.
 
-	*Wrapping options*
+In this way syncronous operations of mapping, filtering etc can be combined with asynchronous mapping and filtering operations.
 
-   a. [am(&lt;**promise**&gt;)](#wrap-promises)  creates *ExtendedPromise* resolving to resolved value of input Promise or rejecting to rejected value of input Promise
-   
-   b. [am(&lt;**generator**&gt;)](#wrap-generator)  creates *ExtendedPromise* resolving to returned value of input generator after any yield statements are resolved.  Any thrown errors values are rejected
+#### 3. **am()** includes all the functionality of **co()**
+
+ES6 generators and yield statements are interpreted similarly
+
+- as in co, yield arguments can be generators, promisesand functions with a single callback 
+- with am they be any entity except a functions with no callback (unless wrapped with **am.fn()**.
+
+- errors from any stage within the generator are returned to a **.catch()** or **.error()** at the end of the chain.
+
+#### 4.  Replaces some common async module methods 
+- **.parallel(), .waterfall()** can be replaced with simpler ES6 patterns
+
  
-   c. [am(&lt;**function with callback argument**&gt;)](#wrap-function-with-callback)  creates *ExtendedPromise* resolving to returned value of callback or rejecting to error value in callback
-    
-   d. [am(**methodName**, &lt;**Class**&gt;)](#wrap-es6-class-with-methods) creates *ExtendedPromise* resolving to returned value of async method, generator method, or synchronous method, in anonymous or named class. Any thrown errors values are rejected to end of chain
-   
-   e. [am(**methodName**, new &lt;Class&gt;(arg))](#wrap-newed-class)  creates *ExtendedPromise* resolving to returned value of async method, generator method, or synchronous method, in new'ed anonymous or named class.  Any thrown errors values are rejected to end of chain
-   
-   f. [am(&lt;**Iterator**&gt;)](#wrap-iterator)  creates *ExtendedPromise* resolving to returned value of iterator (eg executed generator)
-   
-   g. [am(&lt;**boolean | number | string | array | object**&gt;)](#wrap-entities)  creates *ExtendedPromise* resolving to entity  
-   
-   h. [am.fn(&lt;**function without callback**&gt;,**args...**)](#wrap-no-callback-function)  creates *ExtendedPromise* resolving to returned value of function with args applied.  Any thrown errors values in function are rejected to end of chain
-   
-   i. [am.sfn(&lt;**function with success/fail callbacks**&gt;,args..)](#wrap-function-with-success-fail-callbacks)  creates *ExtendedPromise* resolving to returned value of success callback or rejecting to returned value of fail callback when provided arguments applied.
-
-   j. [am(&lt;**Extended Promise**&gt;)](#wrap-extendedpromise)  creates identity
-   
-   k. [am.resolve(&lt;**entity**&gt;)](#am.resolve)  creates *Extended Promise* resolving to entity 
-   
-   l. [am.reject(&lt;**entity**&gt;)](#am.reject)  creates *Extended Promise* rejecting to entity 
-
-More:    [am.all(&lt;**array or object of promises or generators**&gt;)](#am.all), [am.race(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.race), [am.forEach(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.forEach), [am.parallel(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.parallel), [am.waterfall(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.waterfall)
-
 ## Installation
 
 [npm](https://www.npmjs.com/package/async-methods)
@@ -84,8 +79,9 @@ See also  [npm](https://www.npmjs.com/package/api-responder)
 In package.json
 
 ```javascript
-                                                                                                                                                                                                   
-	"async-methods":"^0.2.5"
+                                                                                      
+                                                                                                                             
+	"async-methods":"^1.2.1"
 	
 ```
 
@@ -106,74 +102,9 @@ In code
 ```
 ## Wrapping
 
-###Wrap ES6 Class with methods
+*Normal entities*
 
-####am( methodName , class { methodName { ... }})
-
-```javascript
-                                                                                      
-     am(56)
-        .next('test', class {
-            async test(value) {
-              return await Promise.resolve(89 + (value || 0))
-            }
-          })
-        .log()    //  145
-  
-```
-
-```javascript
-                                                                
-                                                                
-let ep =  am(
-        'test',
-        class {
-          async test() {
-            return await Promise.reject({ e: 567 })
-          }
-        }
-      )
-        .next(r => {
-        
-        // Extended Promise rejects
-          
-        })
-        .error(err => {
-           console.log(err) // { e: 567 }
-          
-        })
-    
-``` 
-
-###Wrap Newed Class
-
-
-#### am(methodName, new class(args...))
-                                                               
-                                                                 
-```javascript
-
-    let ep = am(
-        'test',
-        new class {
-          async test(value) {
-            return await Promise.resolve(56 + (value || 0))
-          }
-        }(),
-        54
-      ).next(r => {
-        assert.ok(ep instanceof am.ExtendedPromise)
-        assert.equal(r, 110)
-        done()
-      })
-
-```
-
-###Wrap Entities
-
-####am([3,4,5]) 
-
-Create *ExtendedPromise* that returns an array.
+**am([3,4,5])** => Extended Promise that returns an array.
 
 synchronous
 
@@ -217,8 +148,7 @@ am(4).timeout(200).filter(function* (value) {
   
 ```
 
-####am({a:3}) 
-Creates= *ExtendedPromise* that returns an object.
+**am({a:3})** => Extended Promise that returns an object.
 
 ```javascript
                                                                                       
@@ -231,26 +161,8 @@ Creates= *ExtendedPromise* that returns an object.
     }).log();
   
 ```
-####am(&lt;boolean | string | null&gt;)
-Creates *ExtendedPromise* that returns entitity
 
-
-```javascript
-                                                                                      
-   am(true).filter(function*(value){
-     return value;
-   }).log('other')
-
-// 'other' true
-  
-```
-
-
-###Wrap Iterator
-
-####am(iterator)  
-
-Creates *ExtendedPromise* which returns the result of the iterator 
+**am(iterator)**  => Extended Promise which returns the result of the iterator 
 
 ```javascript
                                                                                       
@@ -264,13 +176,26 @@ Creates *ExtendedPromise* which returns the result of the iterator
     
 ```
 
-[Iteration protocols](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols)                                                       
+[Iteration protocols](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols)
 
-###Wrap Function-with-callback
 
-####am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)
+**am(&lt;boolean | string | null&gt;)** => Extended Promise that returns entitity
 
-Creates *ExtendedPromise* that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
+
+```javascript
+                                                                                      
+   am(true).filter(function*(value){
+     return value;
+   }).log('other')
+
+// 'other' true
+  
+```
+                                                         
+
+*Entities with asynchronous returns*
+
+**am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)** => Extended Promise that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
 ```javascript
                                                                                       
@@ -288,11 +213,8 @@ Creates *ExtendedPromise* that returns arguments of the callback and passes any 
   
 ```
 
-###Wrap generator
 
-####am(generator)  
-
-Creates *ExtendedPromise* (in same way as to 'co')
+**am(generator)**  => returns Extended Promise (in same way as to 'co')
 
 ```javascript
                                                                                       
@@ -316,11 +238,8 @@ Creates *ExtendedPromise* (in same way as to 'co')
   // yield object with async attributes { b: 'bb', a: { b: 'bb', a: { b: 'bb', c: 'cc' } } }​​​​​
   
 ```
-### Wrap Promises
 
-####am(&lt;Promise&gt;)
-
-Creates *ExtendedPromise*
+**am(&lt;Promise&gt;)**  => returns chainable Extended Promise
 
 ```javascript
                                                                                       
@@ -337,12 +256,11 @@ Creates *ExtendedPromise*
   
 ```
 
-###Wrap Function with Success-Fail callbacks
-
-####am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)
+**am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)** 
 
 returns Extended Promise that returns arguments of the success callback to **next()** or **then()** and passes the argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
+**WRAP a success/failure function**
 
 ```javascript
                                                                                       
@@ -368,47 +286,21 @@ am.sfFn(sf, 1).next(function (r) {
   
 ```
 
-###Wrap No-callback Function
-
-#### am.fn(fn, args...)
-
-Creates *ExtendedPromise* resolving to result of a function without a callback argument when the arguments provided are applied.  If error thrown in execution of function error value is rejected to end of chain
-
-```javascript
-                                                                          
-     let noCallback=(a, b) => {
-        return a + b
-      },
-     ep = am.fn(noCallback,345,678)
-         .next(r => {
-            console.log(r) // 1023
-       
-         })
-         .error(err => {
-        
-         })
-
-```
-###Wrap *ExtendedPromise*
-
-####am(&lt;Extended Promise&gt;) 
-
-Creates identity (input *ExtendedPromise*)
+**am(&lt;Extended Promise&gt;)** => identity
 
 ## Methods
 
-> In all cases **fn** can be a **generator** or a normal function (for analagous synchronous operation)  An ES6 Class (anon or nameed) can be used using syntax .next(methodName,class).  This gives access to ***async/await***
+> In all cases **fn** can be a **generator** or a normal function (for analagous synchronous operation)  A class can be used using syntax .next(methodName,class).  `this gives access to ***async/await***
 
-An optional *tolerant* argument can be used with .map() or .filter() or with .mapFilter() to ensure completion even if there is an error
+*tolerant*  argument allows for the map or filter to complete even if there is an error
 
+*Returning a chainable Extended Promise*
 
-###.map()
-
-#### .map(fn,tolerant)
+### .map(fn,tolerant)
 
 *fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
-equivalent to <array>.map().  If the previous stage of the chain resolves to an *array* or *object*, each element of the array or object is replaced with the returned result of the function or generator
+equivalent to <array>.map().  If the previous stage of the chain resolves to an *array* or *object*, ecah element of the array or object is replaced with the returned result of the function or generator
 
 #### Synchronous
 
@@ -449,11 +341,9 @@ am(Promise.resolve([45, 67]))
   
 ```
 
-###.filter()
+### .filter(fn, tolerant)
 
-#### .filter(fn, tolerant)
-
-*fn can be a normal function (synchronous operations) or a generator (asynchronous operations)   An ES6 Class (anon or named) can be used using syntax .next(methodName,class).*
+*fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
 *Filter can be applied to objects and other entitites as well as arrays
 
@@ -526,14 +416,13 @@ am({
   
 ```
 
-###.mapFilter()
 
-#### .mapFilter(fn, tolerant)
+### .mapFilter(fn, tolerant)
 
 Combines a map followed by a fiter using values returned from the map
 If the mapping function for an element returns false, then the element is excluded from the result
 
-*fn can be a normal function (synchronous operations) or a generator (asynchronous operations).  An ES6 Class (anon or named) can be used using syntax .next(methodName,class).*
+*fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
 
 ####  synchronous
@@ -567,11 +456,9 @@ If the mapping function for an element returns false, then the element is exclud
   
 ```
 
-### .forEach()
+### .forEach(fn)
 
-#### .forEach(fn)
-
-*fn can be a normal function (synchronous operations) or a generator (asynchronous operations). An ES6 Class (anon or named) can be used using syntax .next(methodName,class).*
+*fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
 forEach returns an extended Promise resolving to the initial array or objectx
 
@@ -647,11 +534,10 @@ am({
 //  ​​​​​object async  { a: 34, b: 56, c: 78 }​​​​​
   
 ```
-###.next()
 
-#### .next(fn)
+### .next(fn)
 
-*fn can be a normal function (synchronous operations) or a generator (asynchronous operations).  An ES6 Class (anon or named) can be used using syntax .next(methodName,class).*
+*fn can be a normal function (synchronous operations) or a generator (asynchronous operations)*
 
 #### Anonymous class
 
@@ -682,7 +568,7 @@ am({
   
 ```
 
-#### Newed Class
+####  Named class with arguments for constructor and method
 
 ```javascript
                                                                                       
@@ -703,9 +589,8 @@ am({
         })
   
 ```
-### .timeout()
 
-#### .timeout(ms)
+### .timeout(ms)
 
 ```javascript
                                                                                       
@@ -720,11 +605,7 @@ am({
   
 ```
 
-### .wait() 
-
-*alias of .timeout()*
-
-#### .wait(ms)
+### .wait(ms) (*identical to timeout*)
 
 ```javascript
                                                                                       
@@ -735,12 +616,11 @@ am({
       
 
 ```
-### .log()
 
-#### .log(&lt;success label&gt;[,&lt;error label&gt;'[,Error()]])
+### .log(&lt;success label&gt;[,&lt;error label&gt;'[,Error()]])
 
-*Adding* **Error()** *as last attribute will allow log to add the line number
-and filename to log of success values as well as errors*
+*Adding Error() as last attribute will allow log to add the line number
+and filename to log of success values as well as errors
 
 ```javascript
                                                                                       
@@ -751,17 +631,15 @@ and filename to log of success values as well as errors*
   // ​​​​​with line no.   line 12  of async-methods/test-4.js 1​​​​​
   
 ```
-###.error()
 
-#### .error(fn)
+### .error(fn)
 
-Similar to <Promise>.catch() but by default it is 'pass-through' ie if nothing is returned - the next stage in the chain will receive the same result or error that was passed to error(fn).  
+Similar to <Promise>.catch() but by default it is 'pass-through' ie if nothing is returned - the next stage in the chain will receive the same result or error
+passed to error(fn).  fn can also be a normal function or a generator allowing
+a further chain of asyncronous operations.
 
-*fn can also be a normal function or a generator allowing a further chain of asyncronous operations.  An ES6 Class (anon or named) can be used using syntax .next(methodName,class).*
-
-If the function or generator returns something other than undefined or an error occurs that result or error will be passed to the next stage of the chain.
-
-
+If the function or generator returns something other than undefined or an
+error occurs that result or error will be passed to the enxt stage of the chain.
 
 ```javascript
                                                                                       
@@ -784,8 +662,8 @@ If the function or generator returns something other than undefined or an error 
 
 
 ```javascript
-
-###.promise()                                                                                       
+                                                                                      
+### .promise() 
 
 Converts an Extended Promise to a normal promise (with methods catch and then)
 
@@ -802,27 +680,24 @@ Converts an Extended Promise to a normal promise (with methods catch and then)
    // Promise resolves with [2,3,4]
    
 ```
-###.then()
 
-####.then(fn)
+### .then(fn)
 
 Similar to **<Promise>.then() but returns an Extended Promise.
 
 If want **fn** to be a generator use **.next()**
 
-### .catch()
+### .catch(fn)
 
-#### .catch(fn)
+Identical to **<Promise>.catch()** but returns a chainable Extended Promise.
 
-Identical to **<Promise>.catch()** but returns a chainable *ExtendedPromise*.
-
-If want **fn** to be a generator or class use **.error()**
+If want **fn** to be a generator use **.error()**
 
 ## Static methods
 
 >All static methods return a chainable Extended Promise
 
-###am.waterfall
+*async module replacement*
 
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
 
@@ -844,7 +719,6 @@ am.waterfall({
 
 
 ```
-###am.parallel
 
 #### am.parallel([&lt;am-able>,&lt;am-able>,..])
 
@@ -859,7 +733,6 @@ am.waterfall({
 
 
 ```
-####am.forEach
 
 #### am.forEach(array,fn) 
 where fn is either a function that accepts a callback, or a generator. Anonymous and named claes can also be used to access ***async/await***
@@ -881,8 +754,6 @@ where fn is either a function that accepts a callback, or a generator. Anonymous
 
 These methods have same functionality as their Promise equivalents but return a chainable Extended Promise rather than a normal Promise
 
-###am.resolve
-
 #### am.resolve(value)
 
 ```javascript
@@ -898,7 +769,6 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-###am.reject
 
 #### am.reject(err)
 
@@ -916,7 +786,6 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-###am.all
 
 #### am.all([&lt;am-wrappable>,&lt;am-wrappable>,..])
 
@@ -953,9 +822,8 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-### am.race
 
-####am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
+#### am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
 
 *am.race()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps
 
@@ -1012,13 +880,6 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-
-###  async-methods Extensions
-
-You can now roll-your-own Extended Promise, adding more methods or changing functionality of exiting methods!
-See ***am-sample-ext.js*** and check out this Mongo extension:  [am-mongo](https://github.com/ingenious/am-mongo)
-
-
 
 ###  am._extend(ExtendedPromise)
 ####  For use in creating an extension
