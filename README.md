@@ -35,17 +35,17 @@
 	am() can be used to wrap various types of entities such as generators, classes, promises, functions-with-callback etc. to generate an *Extended Promise*.  Every *Extended Promise* has the same set of chainable methods available to manipulate the resolved and/or rejected values
 	
 	*Chainable methods*
-	- [next(&lt;fn | generator | (methodName,class)&gt;)](#.next())
-	- [error(&lt;fn | generator | (methodName,class)&gt;)](#.error())
-	- [forEach(&lt;fn | generator | (methodName,class)&gt;)](#.forEach)
-	- [map(&lt;fn | generator | (methodName,class)&gt;)](#.map())
-	- [mapFilter(&lt;fn | generator | (methodName,class)&gt;)](#.mapFilter())
-	- [filter(&lt;fn | generator | (methodName,class)&gt;)](#.filter())
-	- [twoPrev(&lt;fn | generator | (methodName,class)&gt;)](#.twoPrev())
-	- [threePrev(&lt;fn | generator | (methodName,class)&gt;)](#.threePrev())
+	- [next(&lt;fn | generator | (methodName,class)&gt;)](#next)
+	- [error(&lt;fn | generator | (methodName,class)&gt;)](#error)
+	- [forEach(&lt;fn | generator | (methodName,class)&gt;)](#forEach)
+	- [map(&lt;fn | generator | (methodName,class)&gt;)](#map)
+	- [mapFilter(&lt;fn | generator | (methodName,class)&gt;)](#mapFilter)
+	- [filter(&lt;fn | generator | (methodName,class)&gt;)](#filter)
+	- [twoPrev(&lt;fn | generator | (methodName,class)&gt;)](#twoPrev)
+	- [threePrev(&lt;fn | generator | (methodName,class)&gt;)](#threePrev)
 	- [prev()](#.prev())
 
-      More: [.log()](#.log()), [.wait()](#.wait()), [.timeout()](#.timeout()), [.catch()](#.catch()), [.then()](#.then()), [.promise()](#.promise()) 
+      More: [.log()](#log), [.wait()](#wait), [.timeout()](#timeout), [.catch()](#catch()), [.then()](#then), [.promise()](#promise) 
 
 	*Wrapping options*
 
@@ -69,11 +69,11 @@
 
    j. [am(&lt;**Extended Promise**&gt;)](#wrap-extendedpromise)  creates identity
    
-   k. [am.resolve(&lt;**entity**&gt;)](#am.resolve)  creates *Extended Promise* resolving to entity 
+   k. [am.resolve(&lt;**entity**&gt;)](#wrap-resolve)  creates *Extended Promise* resolving to entity 
    
-   l. [am.reject(&lt;**entity**&gt;)](#am.reject)  creates *Extended Promise* rejecting to entity 
+   l. [am.reject(&lt;**entity**&gt;)](#wrap-reject)  creates *Extended Promise* rejecting to entity 
 
-More:    [am.all(&lt;**array or object of promises or generators**&gt;)](#am.all), [am.race(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.race), [am.forEach(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.forEach), [am.parallel(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.parallel), [am.waterfall(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#am.waterfall)
+More:    [am.all(&lt;**array or object of promises or generators**&gt;)](#wrap-all), [am.race(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-race), [am.forEach(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-forEach), [am.parallel(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-parallel), [am.waterfall(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-waterfall)
 
 ## Installation
 
@@ -108,7 +108,7 @@ In code
 
 ### Wrap ES6 Class with methods
 
-####am( methodName , class { methodName { ... }})
+#### am( methodName , class { methodName { ... }})
 
 ```javascript
                                                                                       
@@ -405,7 +405,7 @@ Creates identity (input *ExtendedPromise*)
 An optional *tolerant* argument can be used with .map() or .filter() or with .mapFilter() to ensure completion even if there is an error
 
 
-### .map()
+### map
 
 #### .map(fn,tolerant)
 
@@ -452,7 +452,7 @@ am(Promise.resolve([45, 67]))
   
 ```
 
-### .filter()
+### filter
 
 #### .filter(fn, tolerant)
 
@@ -529,7 +529,7 @@ am({
   
 ```
 
-### .mapFilter()
+### mapFilter
 
 #### .mapFilter(fn, tolerant)
 
@@ -570,7 +570,7 @@ If the mapping function for an element returns false, then the element is exclud
   
 ```
 
-### .forEach()
+### forEach
 
 #### .forEach(fn)
 
@@ -650,7 +650,7 @@ am({
 //  ​​​​​object async  { a: 34, b: 56, c: 78 }​​​​​
   
 ```
-### .next()
+### next
 
 #### .next(fn)
 
@@ -706,7 +706,7 @@ am({
         })
   
 ```
-### .timeout()
+### timeout
 
 #### .timeout(ms)
 
@@ -723,7 +723,7 @@ am({
   
 ```
 
-### .wait() 
+### wait
 
 *alias of .timeout()*
 
@@ -738,7 +738,7 @@ am({
       
 
 ```
-### .log()
+### log
 
 #### .log(&lt;success label&gt;[,&lt;error label&gt;'[,Error()]])
 
@@ -754,7 +754,7 @@ and filename to log of success values as well as errors*
   // ​​​​​with line no.   line 12  of async-methods/test-4.js 1​​​​​
   
 ```
-### .error()
+### error
 
 #### .error(fn)
 
@@ -788,7 +788,7 @@ If the function or generator returns something other than undefined or an error 
 
 ```javascript
 
-### .promise()                                                                                       
+### promise                                                                                  
 
 Converts an Extended Promise to a normal promise (with methods catch and then)
 
@@ -805,7 +805,7 @@ Converts an Extended Promise to a normal promise (with methods catch and then)
    // Promise resolves with [2,3,4]
    
 ```
-### .then()
+### then
 
 #### .then(fn)
 
@@ -813,7 +813,7 @@ Similar to **<Promise>.then() but returns an Extended Promise.
 
 If want **fn** to be a generator use **.next()**
 
-### .catch()
+### catch
 
 #### .catch(fn)
 
@@ -825,7 +825,7 @@ If want **fn** to be a generator or class use **.error()**
 
 >All static methods return a chainable Extended Promise
 
-### am.waterfall
+### Wrap waterfall
 
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
 
@@ -847,7 +847,7 @@ am.waterfall({
 
 
 ```
-### am.parallel
+### Wrap parallel
 
 #### am.parallel([&lt;am-able>,&lt;am-able>,..])
 
@@ -862,7 +862,7 @@ am.waterfall({
 
 
 ```
-#### am.forEach
+#### Wrap forEach
 
 #### am.forEach(array,fn) 
 where fn is either a function that accepts a callback, or a generator. Anonymous and named claes can also be used to access ***async/await***
@@ -884,7 +884,7 @@ where fn is either a function that accepts a callback, or a generator. Anonymous
 
 These methods have same functionality as their Promise equivalents but return a chainable Extended Promise rather than a normal Promise
 
-### am.resolve
+### Wrap resolve
 
 #### am.resolve(value)
 
@@ -901,7 +901,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-### am.reject
+### Wrap reject
 
 #### am.reject(err)
 
@@ -919,7 +919,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-### am.all
+### Wrap all
 
 #### am.all([&lt;am-wrappable>,&lt;am-wrappable>,..])
 
@@ -956,7 +956,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-### am.race
+### Wrap race
 
 #### am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
 
