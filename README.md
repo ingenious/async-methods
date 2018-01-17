@@ -114,7 +114,7 @@ synchronous
 
      return 2 * value + i;
    
-   }).log('array wrapper);
+   }).log('array wrapper');
 
    //  array wrapper [15ms] [ 6, 9, 12 ]​​​​​
   
