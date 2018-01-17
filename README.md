@@ -106,7 +106,7 @@ In code
 ```
 ## Wrapping
 
-###Wrap ES6 Class with methods
+### Wrap ES6 Class with methods
 
 ####am( methodName , class { methodName { ... }})
 
@@ -145,7 +145,7 @@ let ep =  am(
     
 ``` 
 
-###Wrap Newed Class
+### Wrap Newed Class
 
 
 #### am(methodName, new class(args...))
@@ -169,9 +169,9 @@ let ep =  am(
 
 ```
 
-###Wrap Entities
+### Wrap Entities
 
-####am([3,4,5]) 
+#### am([3,4,5]) 
 
 Create *ExtendedPromise* that returns an array.
 
@@ -217,7 +217,8 @@ am(4).timeout(200).filter(function* (value) {
   
 ```
 
-####am({a:3}) 
+#### am({a:3}) 
+
 Creates= *ExtendedPromise* that returns an object.
 
 ```javascript
@@ -231,7 +232,9 @@ Creates= *ExtendedPromise* that returns an object.
     }).log();
   
 ```
-####am(&lt;boolean | string | null&gt;)
+
+#### am(&lt;boolean | string | null&gt;)
+
 Creates *ExtendedPromise* that returns entitity
 
 
@@ -246,9 +249,9 @@ Creates *ExtendedPromise* that returns entitity
 ```
 
 
-###Wrap Iterator
+### Wrap Iterator
 
-####am(iterator)  
+#### am(iterator)  
 
 Creates *ExtendedPromise* which returns the result of the iterator 
 
@@ -266,9 +269,9 @@ Creates *ExtendedPromise* which returns the result of the iterator
 
 [Iteration protocols](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Iteration_protocols)                                                       
 
-###Wrap Function-with-callback
+### Wrap Function-with-callback
 
-####am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)
+#### am(function(&lt;args&gt;, callback){ ... },&lt;args&gt;)
 
 Creates *ExtendedPromise* that returns arguments of the callback and passes any err to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
@@ -288,9 +291,9 @@ Creates *ExtendedPromise* that returns arguments of the callback and passes any 
   
 ```
 
-###Wrap generator
+### Wrap generator
 
-####am(generator)  
+#### am(generator)  
 
 Creates *ExtendedPromise* (in same way as to 'co')
 
@@ -318,7 +321,7 @@ Creates *ExtendedPromise* (in same way as to 'co')
 ```
 ### Wrap Promises
 
-####am(&lt;Promise&gt;)
+#### am(&lt;Promise&gt;)
 
 Creates *ExtendedPromise*
 
@@ -337,9 +340,9 @@ Creates *ExtendedPromise*
   
 ```
 
-###Wrap Function with Success-Fail callbacks
+### Wrap Function with Success-Fail callbacks
 
-####am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)
+#### am.sfFn(function(<args>,successFn, errorFn,&lt;args&gt;)
 
 returns Extended Promise that returns arguments of the success callback to **next()** or **then()** and passes the argument of the error function to a **.error(fn)**  or **.catch(fn)** at end of the chain.
 
@@ -368,7 +371,7 @@ am.sfFn(sf, 1).next(function (r) {
   
 ```
 
-###Wrap No-callback Function
+### Wrap No-callback Function
 
 #### am.fn(fn, args...)
 
@@ -389,9 +392,9 @@ Creates *ExtendedPromise* resolving to result of a function without a callback a
          })
 
 ```
-###Wrap *ExtendedPromise*
+### Wrap *ExtendedPromise*
 
-####am(&lt;Extended Promise&gt;) 
+#### am(&lt;Extended Promise&gt;) 
 
 Creates identity (input *ExtendedPromise*)
 
@@ -402,7 +405,7 @@ Creates identity (input *ExtendedPromise*)
 An optional *tolerant* argument can be used with .map() or .filter() or with .mapFilter() to ensure completion even if there is an error
 
 
-###.map()
+### .map()
 
 #### .map(fn,tolerant)
 
@@ -449,7 +452,7 @@ am(Promise.resolve([45, 67]))
   
 ```
 
-###.filter()
+### .filter()
 
 #### .filter(fn, tolerant)
 
@@ -526,7 +529,7 @@ am({
   
 ```
 
-###.mapFilter()
+### .mapFilter()
 
 #### .mapFilter(fn, tolerant)
 
@@ -591,7 +594,7 @@ am([34, 56, 78]).forEach(function (value, i) {
   
 ```
 
-####generator/yield
+#### generator/yield
 
 ```javascript
                                                                                       
@@ -647,7 +650,7 @@ am({
 //  ​​​​​object async  { a: 34, b: 56, c: 78 }​​​​​
   
 ```
-###.next()
+### .next()
 
 #### .next(fn)
 
@@ -751,7 +754,7 @@ and filename to log of success values as well as errors*
   // ​​​​​with line no.   line 12  of async-methods/test-4.js 1​​​​​
   
 ```
-###.error()
+### .error()
 
 #### .error(fn)
 
@@ -785,7 +788,7 @@ If the function or generator returns something other than undefined or an error 
 
 ```javascript
 
-###.promise()                                                                                       
+### .promise()                                                                                       
 
 Converts an Extended Promise to a normal promise (with methods catch and then)
 
@@ -802,9 +805,9 @@ Converts an Extended Promise to a normal promise (with methods catch and then)
    // Promise resolves with [2,3,4]
    
 ```
-###.then()
+### .then()
 
-####.then(fn)
+#### .then(fn)
 
 Similar to **<Promise>.then() but returns an Extended Promise.
 
@@ -822,7 +825,7 @@ If want **fn** to be a generator or class use **.error()**
 
 >All static methods return a chainable Extended Promise
 
-###am.waterfall
+### am.waterfall
 
 #### am.waterfall([&lt;am-able>,&lt;am-able>,..])
 
@@ -844,7 +847,7 @@ am.waterfall({
 
 
 ```
-###am.parallel
+### am.parallel
 
 #### am.parallel([&lt;am-able>,&lt;am-able>,..])
 
@@ -859,7 +862,7 @@ am.waterfall({
 
 
 ```
-####am.forEach
+#### am.forEach
 
 #### am.forEach(array,fn) 
 where fn is either a function that accepts a callback, or a generator. Anonymous and named claes can also be used to access ***async/await***
@@ -881,7 +884,7 @@ where fn is either a function that accepts a callback, or a generator. Anonymous
 
 These methods have same functionality as their Promise equivalents but return a chainable Extended Promise rather than a normal Promise
 
-###am.resolve
+### am.resolve
 
 #### am.resolve(value)
 
@@ -898,7 +901,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-###am.reject
+### am.reject
 
 #### am.reject(err)
 
@@ -916,7 +919,7 @@ These methods have same functionality as their Promise equivalents but return a 
 
 
 ```
-###am.all
+### am.all
 
 #### am.all([&lt;am-wrappable>,&lt;am-wrappable>,..])
 
@@ -955,7 +958,7 @@ These methods have same functionality as their Promise equivalents but return a 
 ```
 ### am.race
 
-####am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
+#### am.race([&lt;am-wrappable&gt;,&lt;am-wrappable&gt;,..])
 
 *am.race()* can wrap an object as well as an array and the elements of the array or object don't have to be Promises they can be anyhting that **am** wraps
 
