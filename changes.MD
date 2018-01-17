@@ -1,3 +1,24 @@
+### Version 0.2.5
+
+#### Changes to functionality
+
+1. added .twoPrev(<generator|function|class>)
+
+passes two arguments - last result and previous result in chain
+
+returns Extended Promise resolving to an array of two latest resolved values in chain
+
+2. added .threePrev(<generator|function|class>)
+
+passes three arguments - last result, previous result and previous result in chain
+
+returns Extended Promise resolving to an array of three latest resolved values in chain
+
+#### Testing
+
+1.  added tests for .twoPrev() and .threePrev()
+
+
 ### Version 0.2.4
 
 #### Changes to functionality

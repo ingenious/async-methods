@@ -24,7 +24,7 @@ class ExtendedPromise extends asyncMethods.ExtendedPromise {
   // ===============================================================
 
   // returns previous 2 results (last and one before) in chain
-  twoPrev(fn) {
+  twoPrevious(fn) {
     let self = this,
       prev = (self._state_ && self._state_.prev) || null,
       transform,

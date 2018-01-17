@@ -9,7 +9,7 @@ describe('Test extension template using ._extend()', function() {
         .next(function(r) {
           return 67
         })
-        .twoPrev(function(r, prev) {
+        .twoPrevious(function(r, prev) {
           assert.equal(r, 67)
           assert.equal(prev, 23)
           done()
@@ -20,7 +20,7 @@ describe('Test extension template using ._extend()', function() {
         .next(function*(r) {
           return yield 67
         })
-        .twoPrev(function*(r, prev) {
+        .twoPrevious(function*(r, prev) {
           yield Promise.resolve()
           assert.equal(r, 67)
           assert.equal(prev, 23)
@@ -36,7 +36,7 @@ describe('Test extension template using ._extend()', function() {
             }
           }
         )
-        .twoPrev(
+        .twoPrevious(
           'test',
           class {
             test(lastResult, prev) {

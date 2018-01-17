@@ -639,6 +639,138 @@ class ExtendedPromise extends Promise {
     }
     return wrappedNewResult
   }
+
+  twoPrev(fn) {
+    let self = this,
+      prev = (self._state_ && self._state_.prev) || null,
+      transform,
+      newContext = this._state_
+    let argsHaveClass = am.argumentsHaveClass(arguments)
+
+    newContext.prev = this
+    transform = function(resolve, reject, result, err) {
+      let newResult,
+        prevExtendedPromises = [self]
+      if (prev) {
+        prevExtendedPromises.push(prev)
+      }
+
+      am.all(prevExtendedPromises).next(function(args) {
+        if (argsHaveClass) {
+          let newResult
+          try {
+            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
+            console.log(args, newResult)
+            if (newResult === undefined) {
+              newResult = args
+            }
+            newResult.next(resolve).catch(reject)
+          } catch (e) {
+            reject(e)
+          }
+        } else if (am.isGenerator(fn)) {
+          // generator - asynchronous step
+          am(fn.apply(self, args))
+            .next(function(newResult) {
+              if (newResult === undefined) {
+                newResult = args
+              }
+              return am(newResult)
+                .next(resolve)
+                .error(reject)
+            })
+            .catch(reject)
+        } else if (typeof fn === 'function') {
+          try {
+            newResult = fn.apply(self, args)
+
+            if (newResult === undefined) {
+              newResult = args
+            }
+            am(newResult)
+              .next(resolve)
+              .error(reject)
+          } catch (e) {
+            console.log(677, e)
+            reject(e)
+          }
+        } else {
+          am(args)
+            .next(resolve)
+            .error(reject)
+        }
+      })
+    }
+
+    return am.ExtendedPromise._chain(self, newContext)(transform)
+  }
+
+  threePrev(fn) {
+    let self = this,
+      prev = (self._state_ && self._state_.prev) || null,
+      transform,
+      newContext = self._state_
+    let argsHaveClass = am.argumentsHaveClass(arguments)
+
+    newContext.prev = this
+    transform = function(resolve, reject, result, err) {
+      let newResult,
+        prevExtendedPromises = [self]
+      if (prev) {
+        prevExtendedPromises.push(prev)
+
+        // get result from three steps previous in chain
+        if (prev._state_ && prev._state_.prev) {
+          prevExtendedPromises.push(prev._state_.prev)
+        }
+      }
+      am.all(prevExtendedPromises).next(function(args) {
+        if (argsHaveClass) {
+          let newResult
+          try {
+            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
+            if (newResult === undefined) {
+              newResult = args
+            }
+            newResult.next(resolve).catch(reject)
+          } catch (e) {
+            reject(e)
+          }
+        } else if (am.isGenerator(fn)) {
+          // generator - asynchronous step
+          am(fn.apply(self, args))
+            .next(function(newResult) {
+              if (newResult === undefined) {
+                newResult = args
+              }
+              return am(newResult)
+                .next(resolve)
+                .error(reject)
+            })
+            .catch(reject)
+        } else if (typeof fn === 'function') {
+          try {
+            newResult = fn.apply(self, args)
+            if (newResult === undefined) {
+              newResult = args
+            }
+            am(newResult)
+              .next(resolve)
+              .error(reject)
+          } catch (e) {
+            reject(e)
+          }
+        } else {
+          console.log(756)
+          am(args)
+            .next(resolve)
+            .error(reject)
+        }
+      })
+    }
+
+    return am.ExtendedPromise._chain(self, newContext)(transform)
+  }
 }
 
 am = function(initial) {
