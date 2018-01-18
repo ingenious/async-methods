@@ -20,6 +20,8 @@
 
 2. New documentation of 'asyncronous steps in ES6 Class' pattern
 
+3.  Gitter now available for questions/support/suggestions on **async-methods** [gitter](https://gitter.im/ingenio-us-npm-packages/Lobby)
+
 
 ##  README for version 0.1.x
 
