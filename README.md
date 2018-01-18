@@ -38,13 +38,13 @@
 	*Chainable methods*
 	- [**next**(&lt;fn | generator | (methodName,class)&gt;)](#next)
 	- [**error**(&lt;fn | generator | (methodName,class)&gt;)](#error)
-	- [**forEach**(&lt;fn | generator | (methodName,class)&gt;)](#forEach)
+	- [**forEach**(&lt;fn | generator | (methodName,class)&gt;)](#foreach)
 	- [**map**(&lt;fn | generator | (methodName,class)&gt;)](#map)
-	- [**mapFilter**(&lt;fn | generator | (methodName,class)&gt;)](#mapFilter)
+	- [**mapFilter**(&lt;fn | generator | (methodName,class)&gt;)](#mapfilter)
 	- [**filter**(&lt;fn | generator | (methodName,class)&gt;)](#filter)
-	- [**twoPrev**(&lt;fn | generator | (methodName,class)&gt;)](#twoPrev)
-	- [**threePrev**(&lt;fn | generator | (methodName,class)&gt;)](#threePrev)
-	- [**prev**()](#.prev())
+	- [**twoPrev**(&lt;fn | generator | (methodName,class)&gt;)](#twoprev)
+	- [**threePrev**(&lt;fn | generator | (methodName,class)&gt;)](#threeprev)
+	- [**prev**()](#prev)
 
       More: [.log()](#log), [.wait()](#wait), [.timeout()](#timeout), [.catch()](#catch), [.then()](#then), [.promise()](#promise) 
 
@@ -74,7 +74,7 @@
    
    l. [am.reject(&lt;**entity**&gt;)](#wrap-reject)  creates *Extended Promise* rejecting to entity 
 
-More:    [am.all(&lt;**array or object of promises or generators**&gt;)](#wrap-all), [am.race(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-race), [am.forEach(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-forEach), [am.parallel(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-parallel), [am.waterfall(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-waterfall)
+More:    [am.all(&lt;**array or object of promises or generators**&gt;)](#wrap-all), [am.race(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-race), [am.forEach(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-foreach), [am.parallel(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-parallel), [am.waterfall(&lt;**array or object of functions-with-callback, promises or generators**&gt;)](#wrap-waterfall)
 
 ## Installation
 
@@ -865,6 +865,111 @@ forEach returns an extended Promise resolving to the initial array or objectx
         })
   
 ```
+
+### prev
+
+#### .prev()
+
+  returns *ExtendedPromise* resolving or rejecting per previous step in chain
+  
+The *ExtendedPromise* object keeps a reference to all previous states of the 
+specific chain.  prev() uses this to allow the application logic to reverse the chain to previous states 
+
+#### prev() after map()
+
+```javascript
+                                                                                      
+                                                                                      
+    let ep = am(function*() {
+          yield Promise.resolve()
+          return { a: 238 }
+        })
+        .map(function(value, attr) {
+          return value * 2
+        })
+    
+        .prev()
+        
+        .next(r => {
+          console.log(r) // { a: 238 })
+          
+        })
+        .error(err => {
+          // handle errrors at end of chain
+        })
+
+
+```
+#### prev() used twice
+
+
+```javascript
+                                                                                      
+    let ep = am(function*() {
+        yield Promise.resolve()
+        return { a: 238, b: 56 }
+      })
+        .map(function(value, attr) {
+          return value * 2
+        })
+        .filter(function(value, attr) {
+          return attr === 'a' ? true : false
+        })
+        .prev()
+        .prev()
+        .next(r => {
+          console.log(r) // { a: 238, b: 56 })
+          
+        })
+        .error(err => {
+          	// handle errors at end of chain
+        })
+
+
+```
+
+#### prev() after map() and wait()
+
+```javascript
+                                                                                      
+      let ep = am(function*() {
+          yield Promise.resolve()
+          return { a: 238, b: 56 }
+        })
+        .map(function(value, attr) {
+          return value * 2
+        })
+        .wait(200)
+
+        .prev()
+
+        .next(r => {
+          console.log(r) // { a: 238, b: 56 })
+          
+        })
+        .error(err => {
+          
+        })
+
+```
+
+
+#### prev() after error()
+
+```javascript
+                                                                                      
+ let ep = am.reject({ error: 89 })
+ 		  .error(()=> {
+           return { b: 789 }
+        })
+      
+        .prev()
+        .error(r => {
+          console.log(r) // { error: 89 })
+          
+        })
+
+```    
 
 ### twoPrev
 
