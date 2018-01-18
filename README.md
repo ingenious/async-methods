@@ -6,7 +6,7 @@
 
 > * Can replaces 'caolan/async' package with ES6 native promise-based code and replicate 'jongleberry/co' package functionality but with many extended options
 
-> * 191 unit and functional tests covering all use cases
+> * am.js is one file with no dependencies, 191 unit and functional tests covering all use cases
 
 > * Supports **async/await** with optional **Asyncronous steps in ES6 Class** pattern/layout which allows mixing of **async** methods or *generator* methods with **yield** or  normal functions (synchronous steps).
 
@@ -78,15 +78,15 @@ More:    [am.all(&lt;**array or object of promises or generators**&gt;)](#wrap-a
 
 ## Installation
 
-[npm](https://www.npmjs.com/package/async-methods)
+[async-methods on npm](https://www.npmjs.com/package/async-methods)
 
-See also  [npm](https://www.npmjs.com/package/api-responder)
+See also  [api-responder on npm](https://www.npmjs.com/package/api-responder) [am-methods on npm](https://www.npmjs.com/package/am-methods)
 
 In package.json
 
 ```javascript
                                                                                                                                                                                                    
-	"async-methods":"^0.2.5"
+	"async-methods":"^0.2.9"
 	
 ```
 
