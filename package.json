@@ -29,7 +29,7 @@
     "url": "https://github.com/ingenious/async-methods.git"
   },
   "description": "co-like wrapper for chaining asyncronous and syncronous processes in nodejs with support for generators/yield and async/await",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "main": "am.js",
   "dependencies": {},
   "devDependencies": {

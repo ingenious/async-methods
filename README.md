@@ -108,17 +108,23 @@ In code
 
 ## Handling Promise rejections
 
-	NodeJS requires all rejections in a Promise chain to be handled or an exception is thrown.
-	When creating chains with **am** and *ExtendedPromise* methods always have an 
-	
+NodeJS requires all rejections in a Promise chain to be handled or an exception is thrown.
+When creating chains with **am** and *ExtendedPromise* methods always have an 
+
+```javascript
 	  .error(err=>{
 	
-	  }) or 
-	
+	  }) 
+``` 
+or 
+
+```javascript
 	  .catch(err=>{
 	
 	  })  
-	at the end of the chain (see examples below)
+```
+	  
+at the end of the chain (see examples below).  That way errors will be trapped and not cause exceptions
 	
 ## Wrapping
 
