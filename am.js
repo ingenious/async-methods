@@ -659,12 +659,14 @@ class ExtendedPromise extends Promise {
         if (argsHaveClass) {
           let newResult
           try {
-            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
-            console.log(args, newResult)
-            if (newResult === undefined) {
-              newResult = args
-            }
-            newResult.next(resolve).catch(reject)
+            am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
+              .next(function(newResult) {
+                if (newResult === undefined) {
+                  newResult = args
+                }
+                resolve(newResult)
+              })
+              .catch(reject)
           } catch (e) {
             reject(e)
           }
@@ -691,7 +693,6 @@ class ExtendedPromise extends Promise {
               .next(resolve)
               .error(reject)
           } catch (e) {
-            console.log(677, e)
             reject(e)
           }
         } else {
@@ -728,11 +729,14 @@ class ExtendedPromise extends Promise {
         if (argsHaveClass) {
           let newResult
           try {
-            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
-            if (newResult === undefined) {
-              newResult = args
-            }
-            newResult.next(resolve).catch(reject)
+            am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
+              .next(function(newResult) {
+                if (newResult === undefined) {
+                  newResult = args
+                }
+                resolve(newResult)
+              })
+              .error(reject)
           } catch (e) {
             reject(e)
           }

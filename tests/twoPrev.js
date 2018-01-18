@@ -93,22 +93,21 @@ describe('.twoPrev()', function() {
   describe('\n    Anonymous Class', function() {
     it('should return extended promise resolving or rejecting to returned value of anonymous class', function(done) {
       let ep = am(56)
-        .next(
+        .next(function(item) {
+          return { a: 2 }
+        })
+        .twoPrev(
           'test',
           class {
-            async test(value) {
-              return await Promise.resolve(89 + (value || 0))
+            async test(value, previous) {
+              assert.deepEqual(value, { a: 2 })
+              assert.deepEqual(previous, 56)
+              return await Promise.resolve(89 + (previous || 0))
             }
           }
         )
-        .twoPrev((r, p) => {
-          assert.ok(ep instanceof am.ExtendedPromise)
-
-          assert.equal(r, 145)
-          assert.equal(p, 56)
-        })
         .next(r => {
-          assert.deepEqual(r, [145, 56])
+          assert.deepEqual(r, 145)
           done()
         })
         .error(err => {
@@ -148,46 +147,54 @@ describe('.twoPrev()', function() {
   })
   describe('\n    Named Class', function() {
     it('should return extended promise resolving or rejecting to returned value of anonymous class', function(done) {
-      let sample = class {
-        async test(value) {
-          return await Promise.resolve(89 + (value || 0))
+      let ep,
+        sample = class {
+          async test(value) {
+            return await Promise.resolve(89 + (value || 0))
+          }
+          *result(r, p) {
+            assert.ok(ep instanceof am.ExtendedPromise)
+            assert.equal(p, 56)
+            assert.equal(r, 145)
+            done()
+          }
         }
-      }
-      let ep = am(56)
+      ep = am(56)
         .next('test', sample)
-        .twoPrev((r, p) => {
-          assert.ok(ep instanceof am.ExtendedPromise)
-          assert.equal(p, 56)
-          assert.equal(r, 145)
-          done()
-        })
+        .twoPrev('result', sample)
         .error(err => {
           console.log(165, err)
           assert.fail(err, null, '')
         })
+
         .catch(done)
     })
   })
   describe('\n    Named Class (newed with argument(s))', function() {
     it('should return extended promise resolving or rejecting to returned value of named class method', function(done) {
-      let sample = class {
-        constructor(type) {
-          this.type = type
-        }
-        async test(value) {
-          return await Promise.resolve(89 + (this.type || 0) + (value || 0))
-        }
-      }
-      let ep = am(56)
-        .next('test', new sample(45))
-        .twoPrev((r, p) => {
-          assert.ok(ep instanceof am.ExtendedPromise)
-          assert.equal(r, 190)
-          assert.equal(p, 56)
-          done()
-        })
+      let ep,
+        sample = class {
+          constructor(type) {
+            this.type = type
+          }
+          async test(value) {
+            return await Promise.resolve(89 + (this.type || 0) + (value || 0))
+          }
+          *result(r, p) {
+            assert.ok(ep instanceof am.ExtendedPromise)
+
+            assert.equal(r, 190)
+            assert.equal(p, 56)
+          }
+        },
+        newed = new sample(45)
+
+      ep = am(56)
+        .next('test', newed)
+        .twoPrev('result', newed)
         .next(r => {
           assert.deepEqual(r, [190, 56])
+          done()
         })
         .error(err => {
           console.log(err)
