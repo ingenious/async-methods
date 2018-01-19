@@ -33,7 +33,7 @@
 
 ## How it works
 
-1. ### Wrapping
+### Wrapping
 
 	am() can be used to wrap various types of entities such as generators, classes, promises, functions-with-callback etc. to generate an *Extended Promise*.  Every *Extended Promise* has the same set of chainable methods available to manipulate the resolved and/or rejected values
 	
