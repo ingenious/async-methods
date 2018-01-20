@@ -35,22 +35,23 @@
 
 ### Wrapping
 
-	am() can be used to wrap various types of entities such as generators, classes, promises, functions-with-callback etc. to generate an *Extended Promise*.  Every *Extended Promise* has the same set of chainable methods available to manipulate the resolved and/or rejected values
+am() can be used to wrap various types of entities such as generators, classes, promises, functions-with-callback etc. to generate an *Extended Promise*.  Every *Extended Promise* has the same set of chainable methods available to manipulate the resolved and/or rejected values
 	
-	*Chainable methods*
-	- [**next**(&lt;fn | generator | (methodName,class)&gt;)](#next)
-	- [**error**(&lt;fn | generator | (methodName,class)&gt;)](#error)
-	- [**forEach**(&lt;fn | generator | (methodName,class)&gt;)](#foreach)
-	- [**map**(&lt;fn | generator | (methodName,class)&gt;)](#map)
-	- [**mapFilter**(&lt;fn | generator | (methodName,class)&gt;)](#mapfilter)
-	- [**filter**(&lt;fn | generator | (methodName,class)&gt;)](#filter)
-	- [**twoPrev**(&lt;fn | generator | (methodName,class)&gt;)](#twoprev)
-	- [**threePrev**(&lt;fn | generator | (methodName,class)&gt;)](#threeprev)
-	- [**prev**()](#prev)
+   *Chainable methods*
 
-      More: [.log()](#log), [.wait()](#wait), [.timeout()](#timeout), [.catch()](#catch), [.then()](#then), [.promise()](#promise) 
+   - [**next**(&lt;fn | generator | (methodName,class)&gt;)](#next)
+   - [**error**(&lt;fn | generator | (methodName,class)&gt;)](#error)
+   - [**forEach**(&lt;fn | generator | (methodName,class)&gt;)](#foreach)
+   - [**map**(&lt;fn | generator | (methodName,class)&gt;)](#map)
+   - [**mapFilter**(&lt;fn | generator | (methodName,class)&gt;)](#mapfilter)
+   - [**filter**(&lt;fn | generator | (methodName,class)&gt;)](#filter)
+   - [**twoPrev**(&lt;fn | generator | (methodName,class)&gt;)](#twoprev)
+   - [**threePrev**(&lt;fn | generator | (methodName,class)&gt;)](#threeprev)
+   - [**prev**()](#prev)
 
-	*Wrapping options*
+   More: [.log()](#log), [.wait()](#wait), [.timeout()](#timeout), [.catch()](#catch), [.then()](#then), [.promise()](#promise) 
+
+*Wrapping options*
 
    a. [am(&lt;**promise**&gt;)](#wrap-promises)  creates *ExtendedPromise* resolving to resolved value of input Promise or rejecting to rejected value of input Promise
    
