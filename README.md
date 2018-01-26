@@ -12,15 +12,15 @@
 
 > * Extensible.  easily add additional *Extended Promise* methods
 
+Gitter now available for questions/support/suggestions on **async-methods** [gitter](https://gitter.im/ingenio-us-npm-packages/Lobby)
+
 ## Changes in version 0.2.15
 
 [changes.MD](https://github.com/ingenious/async-methods/blob/master/changes.MD)
 
-1. **.twoPrev()** and **.threePrev()** added with associated tests
+1. additional arguments can be passed to a classs method when used with next(), error(), twoPrev() and threePrev()
 
-2. New documentation of 'asyncronous steps in ES6 Class' pattern
-
-3.  Gitter now available for questions/support/suggestions on **async-methods** [gitter](https://gitter.im/ingenio-us-npm-packages/Lobby)
+2. am.extend() method allows progressive adding of **async-methods** extensions
 
 
 ##  README for version 0.1.x
