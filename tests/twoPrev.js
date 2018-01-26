@@ -63,7 +63,7 @@ describe('.twoPrev()', function() {
           assert.deepStrictEqual(r, [{ second: 897 }, [5, 6, 7]])
           done()
         })
-        .catch(err => {
+        .error(err => {
           assert.fail('Promise rejected', err)
         })
         .catch(done)
@@ -99,12 +99,14 @@ describe('.twoPrev()', function() {
         .twoPrev(
           'test',
           class {
-            async test(value, previous) {
+            async test(value, previous, extraArg) {
+              assert.equal(extraArg, 'extra argument')
               assert.deepEqual(value, { a: 2 })
               assert.deepEqual(previous, 56)
               return await Promise.resolve(89 + (previous || 0))
             }
-          }
+          },
+          'extra argument'
         )
         .next(r => {
           assert.deepEqual(r, 145)
@@ -128,15 +130,21 @@ describe('.twoPrev()', function() {
             }
           }()
         )
-        .twoPrev((r, p) => {
-          assert.ok(ep instanceof am.ExtendedPromise)
-
-          assert.equal(r, 145)
-          assert.equal(p, 56)
-          done()
-        })
+        .twoPrev(
+          'test',
+          new class {
+            test(r, p, extraArg) {
+              assert.ok(ep instanceof am.ExtendedPromise)
+              assert.equal(extraArg, 'extra argument')
+              assert.equal(r, 145)
+              assert.equal(p, 56)
+              done()
+            }
+          }(),
+          'extra argument'
+        )
         .next(r => {
-          assert.deepEqual(r, [145, 56])
+          assert.deepEqual(r, [145, 56, 'extra argument'])
         })
         .error(err => {
           console.log(err)

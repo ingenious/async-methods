@@ -29,16 +29,17 @@
     "url": "https://github.com/ingenious/async-methods.git"
   },
   "description": "co-like wrapper for chaining asyncronous and syncronous processes in nodejs with support for generators/yield and async/await",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "main": "am.js",
   "dependencies": {},
   "devDependencies": {
+    "am-mongo": "*",
     "intercept-stdout": "^0.1.2",
     "mocha": "^4.0.1"
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "test": " mocha ./tests",
-    "test-extend": "mocha ./tests/_extend.js"
+    "test": " mocha ./tests && mocha ./extend-test/extend.js",
+    "test-extend": "mocha ./extend-test/extend.js"
   }
 }

@@ -12,7 +12,7 @@
 
 > * Extensible.  easily add additional *Extended Promise* methods
 
-## Changes in version 0.2.5
+## Changes in version 0.2.15
 
 [changes.MD](https://github.com/ingenious/async-methods/blob/master/changes.MD)
 
@@ -89,7 +89,7 @@ In package.json
 
 ```javascript
                                                                                                                                                                                                    
-	"async-methods":"^0.2.9"
+	"async-methods":"^0.2.15"
 	
 ```
 
@@ -108,6 +108,12 @@ In code
 	let am=require('async-methods');
   
 ```
+
+## Node versions and support for async/await
+
+**async/await** is only available from version 7.6 of node.js.  If you are using an earlier version you will not be able to use the async/await features of **async-methods**.  **async-methods** will still work for wrapping generators and classes with normal functions and generator functions in versions earlier than 7.6.
+
+Generators have been supported in nmodejs since at lease version 4.8.7
 
 ## Handling Promise rejections
 
@@ -133,7 +139,7 @@ at the end of the chain (see examples below).  That way errors will be trapped a
 
 ### Wrap ES6 Class with methods
 
-#### am( methodName , class { methodName { ... }})
+#### am( methodName , class { methodName { ... }}, args ...)
 
 ```javascript
                                                                                       
@@ -178,7 +184,7 @@ let ep =  am(
 
 ### Wrap Newed Class
 
-#### am(methodName, new class(args...))
+#### am(methodName, new class <name> {methodName (){}}(),args..)
                                                                                                                                 
 ```javascript
 
@@ -244,6 +250,45 @@ Create *ExtendedPromise* that returns an array.
       		// handle errors at end of chain
       
       })
+  
+```
+
+### Wrap generator
+
+#### am(generator)  
+
+Creates *ExtendedPromise* (in same way as to 'co')
+
+```javascript
+                                                                                      
+   am(function* () {
+     
+      return yield {
+     
+        b: Promise.resolve('bb'),
+        a: {
+           b: Promise.resolve('bb'),
+           a: {
+              b: Promise.resolve('bb'),
+              c: Promise.resolve('cc')
+             }
+            }
+        };
+    
+    })
+    
+    .log()
+    
+    // logs: 
+    // yield object with async attributes { b: 'bb', a: { b: 'bb', a: { b: 'bb', c: 'cc' } } }​​​​​  
+    
+    .error(err=>{
+      
+      		// handle errors at end of chain
+      
+     })
+
+  
   
 ```
 
@@ -358,45 +403,6 @@ Creates *ExtendedPromise* that returns arguments of the callback and passes any 
       		// handle errors at end of chain
       
       })
-  
-```
-
-### Wrap generator
-
-#### am(generator)  
-
-Creates *ExtendedPromise* (in same way as to 'co')
-
-```javascript
-                                                                                      
-   am(function* () {
-     
-      return yield {
-     
-        b: Promise.resolve('bb'),
-        a: {
-           b: Promise.resolve('bb'),
-           a: {
-              b: Promise.resolve('bb'),
-              c: Promise.resolve('cc')
-             }
-            }
-        };
-    
-    })
-    
-    .log()
-    
-    // logs: 
-    // yield object with async attributes { b: 'bb', a: { b: 'bb', a: { b: 'bb', c: 'cc' } } }​​​​​  
-    
-    .error(err=>{
-      
-      		// handle errors at end of chain
-      
-     })
-
-  
   
 ```
 
@@ -1454,6 +1460,22 @@ Identical to **<Promise>.catch()** but returns a chainable *ExtendedPromise*.
 
 If want **fn** to be a generator or class use **.error()**
 
+#### Additional Arguments passed to class methods 
+
+When wrapping a class and specifying a method name, arguments to be passed to the method can be added can be added as arguments of the wrappimg am().  The same is true for anonymous and named classes used as arguments to  
+
+#### next(methodName,class,...), error(methodName,class,...), 
+
+  Additional arguments added to **next(methodName,class,...)** are **prepended** to the resolved result of previous step and appled as arguments to the method.  Thiis si useful if you don'tt want the result to be used by the method but wish to apply other arguments.
+
+#### twoPrev(methodName,class,...), threePrev(methodName,class,...)
+
+  Additional arguments added to **twoPrev(methodName,class,...)** are **appended** to the resolved result of previous two steps and appled as arguments to the method.  The main purpose of twoPrev is to pass two results to a method.  If additional arguments are required they can be added in this way.
+
+  Additional arguments added to **threePrev(methodName,class,...)** are **appended** to the resolved result of previous three steps and appled as arguments to the method.  The main purpose of threePrev is to pass three results to a method.  If additional arguments are required they can be added in this way.
+
+<hr/>
+
 ## Static methods
 
 >All static methods return a chainable Extended Promise
@@ -1750,13 +1772,52 @@ These methods have same functionality as their Promise equivalents but return a 
 
 ###  async-methods Extensions
 
-You can now roll-your-own Extended Promise, adding more methods or changing functionality of exiting methods!
+Developerts can roll-their-own Extended Promise, adding more methods or changing functionality of exiting methods!
 See ***am-sample-ext.js*** and check out this Mongo extension:  [am-mongo](https://github.com/ingenious/am-mongo)
 
+In application code, **async-methods (am)** can be extended progressively using **am.extend()** static mmthod.  Some new standard extensions are due for release soon, but applicastion developers can create their own and reference them by a filepath as well as by an npm module name.
+
+```javascript
+                                                                
+    let am = require('am-mongo')
+    
+    am.extend(['../../am-axios.js', '../../am-cron.js'])
+
+    // as well as additional am.xxx() static methods
+    // am with now be extended with am-mongo, am-axios and am-cron methods available in the chain
+
+```
+
+This would have the same effect:
+
+```javascript
+                                                                
+    let am = require('async-methods')
+    
+    am.extend(['am-mongo',../../am-axios.js', '../../am-cron.js'])
+
+    // am with now be extended with am-mongo, am-axios and am-cron methods available in the chain
+    // as well as additional am.xxx() static methods
+
+```
+
+A single extension can be specified also
+
+
+```javascript
+                                                                
+    let am = require('async-methods')
+    
+    am.extend('am-mongo')
+
+    // am with now be extended with am-mongo, methods available in the chain
+    // as well as additional am.xxx() static methods
+
+```
 
 
 ###  am._extend(ExtendedPromise)
-####  For use in creating an extension
+####  For use internally in creating an extension
 
 See **am-sample-ext.js** for more explanation
 

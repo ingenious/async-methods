@@ -1,3 +1,49 @@
+# Changes to package by version
+
+## version 0.2.15
+
+1. **am.extend(extensionPackageList)**
+
+async-methods can niow be extended progressively using **am.extend()** static mmthod.  Some new standard extensions are due for release soon, but applicastion developers can create their own and reference them by a filepath as well as by an npm module name.
+
+```javascript
+                                                                
+    let am = require('am-mongo')
+
+    am.extend(['../../am-axios.js', '../../am-cron.js'])
+
+    // as well as additional am.xxx() static methods
+    // am with now be extended with am-mongo, am-axios and am-cron methods available in the chain
+
+```
+
+This would have the same effect:
+
+```javascript
+                                                                
+    let am = require('async-methods')
+
+    am.extend(['am-mongo',../../am-axios.js', '../../am-cron.js'])
+
+    // am with now be extended with am-mongo, am-axios and am-cron methods available in the chain
+    // as well as additional am.xxx() static methods
+
+```
+
+2. ** Additonal arguments for class methods) When wrapping a class and specifying a method name, arguments to be passed to the method can be added can be added as arguments of the wrappimg am().  The same is now true for anonymous and named classes used as arguments to  
+
+### next(methodName,class,...), error(methodName,class,...), 
+
+  Additional arguments added to **next(methodName,class,...)** are **prepended** to the resolved result of previous step and appled as arguments to the method.  Thiis si useful if you don'tt want the result to be used by the method but wish to apply other arguments.
+
+### twoPrev(methodName,class,...), threePrev(methodName,class,...)
+
+  Additional arguments added to **twoPrev(methodName,class,...)** are **appended** to the resolved result of previous two steps and appled as arguments to the method.  The main purpose of twoPrev is to pass two results to a method.  If additional arguments are required they can be added in this way.
+
+  Additional arguments added to **threePrev(methodName,class,...)** are **appended** to the resolved result of previous three steps and appled as arguments to the method.  The main purpose of threePrev is to pass three results to a method.  If additional arguments are required they can be added in this way.
+
+3. Added tests for above feature
+
 ### Version 0.2.5
 
 #### Changes to functionality
@@ -16,7 +62,7 @@ returns Extended Promise resolving to an array of three latest resolved values i
 
 #### Testing
 
-1.  added tests for .twoPrev() and .threePrev()
+3.  added tests for .twoPrev() and .threePrev()
 
 
 ### Version 0.2.4
@@ -45,21 +91,21 @@ returns Extended Promise resolving to an array of three latest resolved values i
 
 #### ES6 Classes with aysnc/await supported
 
-1. Methods am.isClass(), am.argumentsHaveClass() utitlity added
+3. Methods am.isClass(), am.argumentsHaveClass() utitlity added
 
-2. am(method,class) detects and applies detects anonymous class with normal or async methods
+4. am(method,class) detects and applies detects anonymous class with normal or async methods
 
-3. am(initial) detects anonymous or named class and executes the constructor with any arguments
+5. am(initial) detects anonymous or named class and executes the constructor with any arguments
 
 
 
 #### Testing
 
-1. Test for am.race() (Generators) changed
-2. mocha-wepack deprecated in favour of vanilla mocha
-3. Tests added for am.isClass(), am.argumentsHaveClass()
-4. Tests added for sample extension
-5. Tests added for use of named and anonymous classes in next(), forEach(), map(),  mapFilter() and filter()
+6. Test for am.race() (Generators) changed
+7. mocha-wepack deprecated in favour of vanilla mocha
+8. Tests added for am.isClass(), am.argumentsHaveClass()
+9. Tests added for sample extension
+10. Tests added for use of named and anonymous classes in next(), forEach(), map(),  mapFilter() and filter()
 
 
 ### Version 0.1.0
@@ -93,10 +139,10 @@ returns Extended Promise resolving to an array of three latest resolved values i
 
 #### Re-factor
 
-11.  Removed ';' from statement ends
+11. Removed ';' from statement ends
 
-12.  Internally, .next() and .error() used instead of .then() and .catch()
+12. Internally, .next() and .error() used instead of .then() and .catch()
 
-13.  AM class renamed to ExtendedPromise
+13. AM class renamed to ExtendedPromise
 
 

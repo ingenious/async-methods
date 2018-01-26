@@ -54,9 +54,14 @@ class ExtendedPromise extends Promise {
             })
             .error(reject)
         } else if (argsHaveClass) {
-          let newResult
+          let newResult,
+            args = [result]
+          if (argsHaveClass.args) {
+            // prepend any arguments added in method arguments to resolved value from previous step(s) in chain
+            args = argsHaveClass.args.concat([result])
+          }
           try {
-            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, [result])
+            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
 
             // in case newResult is Promise
             am(newResult)
@@ -110,7 +115,8 @@ class ExtendedPromise extends Promise {
       argsHaveClass = am.argumentsHaveClass(arguments),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
       mapFilter = true,
-      newContext = {}
+      newContext = {},
+      args
     for (var attr in self._state_) {
       newContext[attr] = self._state_[attr]
     }
@@ -121,7 +127,12 @@ class ExtendedPromise extends Promise {
         reject(err)
       } else if (argsHaveClass && !am.isArray(result) && !am.isObject(result)) {
         //non-object/array applied to class (synchronous/asynchronous)
-        applyResultToClass(argsHaveClass, [result])
+        args = [result]
+        if (argsHaveClass.args) {
+          // prepend any arguments added in method arguments to resolved value from previous step(s) in chain
+          args = argsHaveClass.args.concat([result])
+        }
+        applyResultToClass(argsHaveClass, args)
           .next(resolve)
           .catch(reject)
       } else if (!argsHaveClass && !am.isGenerator(fn) && am.isObject(result)) {
@@ -529,7 +540,8 @@ class ExtendedPromise extends Promise {
     let self = this,
       argsHaveClass = am.argumentsHaveClass(arguments),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
-      newContext = {}
+      newContext = {},
+      args
     for (var attr in self._state_) {
       newContext[attr] = self._state_[attr]
     }
@@ -557,7 +569,12 @@ class ExtendedPromise extends Promise {
             })
             .error(reject)
         } else if (argsHaveClass) {
-          applyResultToClass(argsHaveClass, [err])
+          args = [err]
+          if (argsHaveClass.args) {
+            // prepend any arguments added in method arguments to resolved value from previous step(s) in chain
+            args = argsHaveClass.args.concat([err])
+          }
+          applyResultToClass(argsHaveClass, args)
             .next(function(newResult) {
               // pass through if nothing returned
               if (newResult === undefined) {
@@ -606,18 +623,33 @@ class ExtendedPromise extends Promise {
       // class with specified method (new first)
       try {
         newedClass = new argsHaveClass.classFn()
-        wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(self, args))
+        if (!newedClass[argsHaveClass.methodName]) {
+          wrappedNewResult = am.reject(
+            argsHaveClass.methodName + ' is not a methodName of the specified Class'
+          )
+        } else {
+          wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(self, args))
+        }
       } catch (e) {
         wrappedNewResult = am.reject(e)
       }
     } else if (argsHaveClass.classObject && argsHaveClass.methodName) {
       // newed class with specified method
-      try {
-        wrappedNewResult = am(
-          argsHaveClass.classObject[argsHaveClass.methodName].apply(argsHaveClass.classObject, args)
+      if (!argsHaveClass.classObject[argsHaveClass.methodName]) {
+        wrappedNewResult = am.reject(
+          argsHaveClass.methodName + ' is not a methodName of the specified Class'
         )
-      } catch (e) {
-        wrappedNewResult = am.reject(e)
+      } else {
+        try {
+          wrappedNewResult = am(
+            argsHaveClass.classObject[argsHaveClass.methodName].apply(
+              argsHaveClass.classObject,
+              args
+            )
+          )
+        } catch (e) {
+          wrappedNewResult = am.reject(e)
+        }
       }
     } else if (argsHaveClass.classFn) {
       // .next(Class)
@@ -660,6 +692,11 @@ class ExtendedPromise extends Promise {
         .next(function(args) {
           if (argsHaveClass) {
             let newResult
+
+            // append any additional arguments passed to threePrev*() to the last 3 results
+            if (argsHaveClass.args) {
+              args = args.concat(argsHaveClass.args)
+            }
             try {
               am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
                 .next(function(newResult) {
@@ -735,6 +772,11 @@ class ExtendedPromise extends Promise {
         .next(function(args) {
           if (argsHaveClass) {
             let newResult
+
+            // append any additional arguments passed to threePrev*() to the last 3 results
+            if (argsHaveClass.args) {
+              args = args.concat(argsHaveClass.args)
+            }
             try {
               am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
                 .next(function(newResult) {
@@ -772,7 +814,6 @@ class ExtendedPromise extends Promise {
               reject(e)
             }
           } else {
-            console.log(756)
             am(args)
               .next(resolve)
               .error(reject)
@@ -1365,6 +1406,27 @@ am.sfFn = function(initial) {
   )
 }
 
+// add one or more extensions to an existing instance
+am.extend = function(extensionPackageList) {
+  if (!am.isArray(extensionPackageList)) {
+    extensionPackageList = [extensionPackageList]
+  }
+  extensionPackageList.forEach(function(extensionPackage) {
+    let amVersion = require(extensionPackage)
+    try {
+      for (var method in amVersion) {
+        if (!am[method]) {
+          am[method] = amVersion[method]
+        }
+      }
+
+      am._extend(amVersion.ExtendedPromise)
+    } catch (e) {
+      console.log(1397, 'Problem extending am with ', extensionPackage, e)
+    }
+  })
+  return am
+}
 am._extend = function(extendedPromise) {
   // back extend async methods ExtendedPromise class
   let superMethodNames = am.methodNames

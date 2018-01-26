@@ -170,7 +170,8 @@ describe('.threePrev()', function() {
   describe('\n    Named Class', function() {
     it('should return extended promise resolving or rejecting to returned value of anonymous class', function(done) {
       let sample = class {
-        async test(value, prev, first) {
+        async test(value, prev, first, extraArg) {
+          assert.equal(extraArg, 'extra argument')
           assert.deepEqual(prev, { a: 56 })
           assert.deepEqual(first, { b: 6 })
           return await Promise.resolve(89 + (value || 0))
@@ -183,7 +184,7 @@ describe('.threePrev()', function() {
         .next(function*(items) {
           return yield Promise.resolve(56)
         })
-        .threePrev('test', sample)
+        .threePrev('test', sample, 'extra argument')
         .next(r => {
           assert.ok(ep instanceof am.ExtendedPromise)
 
@@ -203,7 +204,8 @@ describe('.threePrev()', function() {
         constructor(type) {
           this.type = type
         }
-        async test(value, prev, first) {
+        async test(value, prev, first, extraArg) {
+          assert.equal(extraArg, 'extra argument')
           assert.deepEqual(prev, { a: 56 })
           assert.deepEqual(first, { b: 6 })
           return await Promise.resolve(89 + (this.type || 0) + (value || 0))
@@ -216,7 +218,7 @@ describe('.threePrev()', function() {
         .next(function*(items) {
           return yield Promise.resolve(56)
         })
-        .threePrev('test', new sample(45))
+        .threePrev('test', new sample(45), 'extra argument')
         .next(r => {
           assert.ok(ep instanceof am.ExtendedPromise)
           assert.equal(r, 190)
