@@ -1794,10 +1794,10 @@ This would have the same effect:
                                                                 
     let am = require('async-methods')
     
-    am.extend(['am-mongo',../../am-axios.js', '../../am-cron.js'])
+    am.extend(['am-mongo','../../am-axios.js', '../../am-cron.js'])
 
     // am with now be extended with am-mongo, am-axios and am-cron methods available in the chain
-    // as well as additional am.xxx() static methods
+    // as well as any additional am.xxx() static methods
 
 ```
 
