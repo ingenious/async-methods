@@ -20,8 +20,9 @@ class ExtendedPromise extends Promise {
 
   next(fn) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass(arguments),
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       newContext = {}
+
     for (var attr in self._state_) {
       newContext[attr] = self._state_[attr]
     }
@@ -671,7 +672,17 @@ class ExtendedPromise extends Promise {
     }
     return wrappedNewResult
   }
+  setClass(classReference) {
+    let self = this
+    self._state_.class = classReference
 
+    return self
+  }
+  clearClass() {
+    let self = this
+    delete self._state_.class
+    return self
+  }
   twoPrev(fn) {
     let self = this,
       prev = (self._state_ && self._state_.prev) || null,
@@ -1003,7 +1014,8 @@ am.argumentsHaveClass = function(argsIn) {
     classFn,
     methodName,
     classObject,
-    args = []
+    args = [],
+    self = this
 
   for (i = 0; i < argsIn.length; i++) {
     args.push(argsIn[i])
@@ -1012,6 +1024,21 @@ am.argumentsHaveClass = function(argsIn) {
   if (typeof args[0] === 'string') {
     methodName = args[0]
     args.shift()
+  }
+
+  // if am().setClass(classReference) has been called
+  // use self._state_.class as class when first argument is a string
+  if (self && self._state_ && self._state_.class && methodName) {
+    if (
+      typeof self._state_.class === 'object' &&
+      am.isClass(self._state_.class.constructor) &&
+      self._state_.class[methodName]
+    ) {
+      classObject = self._state_.class
+    }
+    if (typeof self._state_.class === 'function' && am.isClass(self._state_.class)) {
+      classFn = self._state_.class
+    }
   }
 
   // newed Class
