@@ -674,26 +674,13 @@ class ExtendedPromise extends Promise {
   }
   setClass(classReference) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
-      newContext = {},
-      transform = function(resolve, reject, result, err) {
-        if (err) {
-          reject(err)
-        } else if (argsHaveClass.classObject && args.length) {
-          am.ExtendedPromise._applyResultToClass(argsHaveClass, args).next(newedClass => {
-            self._state_.class = newedClass
-            resolve(self)
-          })
-        } else if (argsHaveClass.classObject || argsHaveClass.classFn) {
-          self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
-          resolve(self)
-        }
-      }
-    for (var attr in self._state_) {
-      newContext[attr] = self._state_[attr]
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
+
+    if (argsHaveClass.classObject || argsHaveClass.classFn) {
+      self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
     }
-    newContext.prev = self
-    return am.ExtendedPromise._chain(self, newContext)(transform)
+
+    return self
   }
   clearClass() {
     let self = this
@@ -702,14 +689,12 @@ class ExtendedPromise extends Promise {
   }
   twoPrev(fn) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       prev = (self._state_ && self._state_.prev) || null,
       transform,
-      newContext = {}
-    for (var attr in self._state_) {
-      newContext[attr] = self._state_[attr]
-    }
+      newContext = this._state_
+    let argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
 
+    newContext.prev = this
     transform = function(resolve, reject, result, err) {
       let newResult,
         prevExtendedPromises = [self]
@@ -780,15 +765,12 @@ class ExtendedPromise extends Promise {
 
   threePrev(fn) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       prev = (self._state_ && self._state_.prev) || null,
       transform,
-      newContext = {}
-    for (var attr in self._state_) {
-      newContext[attr] = self._state_[attr]
-    }
-    newContext.prev = self
+      newContext = self._state_
+    let argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
 
+    newContext.prev = this
     transform = function(resolve, reject, result, err) {
       let newResult,
         prevExtendedPromises = [self]
