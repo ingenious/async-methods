@@ -113,7 +113,7 @@ class ExtendedPromise extends Promise {
 
   mapFilter(fn, tolerant) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass(arguments),
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
       mapFilter = true,
       newContext = {},
@@ -215,7 +215,7 @@ class ExtendedPromise extends Promise {
 
   filter(fn, tolerant) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass(arguments),
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
       newContext = {}
     for (var attr in self._state_) {
@@ -315,7 +315,7 @@ class ExtendedPromise extends Promise {
   }
   forEach(fn) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass(arguments),
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
       newContext = {}
     for (var attr in self._state_) {
@@ -400,7 +400,7 @@ class ExtendedPromise extends Promise {
 
   map(fn, tolerant) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass(arguments),
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
       newContext = {}
     for (var attr in self._state_) {
@@ -539,7 +539,7 @@ class ExtendedPromise extends Promise {
 
   error(fn) {
     let self = this,
-      argsHaveClass = am.argumentsHaveClass(arguments),
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
       applyResultToClass = am.ExtendedPromise._applyResultToClass,
       newContext = {},
       args
@@ -673,8 +673,11 @@ class ExtendedPromise extends Promise {
     return wrappedNewResult
   }
   setClass(classReference) {
-    let self = this
-    self._state_.class = classReference
+    let self = this,
+      argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
+    if (argsHaveClass.classObject || argsHaveClass.classFn) {
+      self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
+    }
 
     return self
   }
@@ -688,7 +691,7 @@ class ExtendedPromise extends Promise {
       prev = (self._state_ && self._state_.prev) || null,
       transform,
       newContext = this._state_
-    let argsHaveClass = am.argumentsHaveClass(arguments)
+    let argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
 
     newContext.prev = this
     transform = function(resolve, reject, result, err) {
@@ -764,7 +767,7 @@ class ExtendedPromise extends Promise {
       prev = (self._state_ && self._state_.prev) || null,
       transform,
       newContext = self._state_
-    let argsHaveClass = am.argumentsHaveClass(arguments)
+    let argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
 
     newContext.prev = this
     transform = function(resolve, reject, result, err) {
@@ -892,7 +895,7 @@ am = function(initial) {
     )
   }
 
-  let argsHaveClass = am.argumentsHaveClass([arguments[0]].concat(args))
+  let argsHaveClass = am.argumentsHaveClass.apply(self, [[arguments[0]].concat(args)])
 
   if (argsHaveClass) {
     //
