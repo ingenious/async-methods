@@ -675,20 +675,20 @@ class ExtendedPromise extends Promise {
   setClass(classReference) {
     let self = this,
       argsHaveClass = am.argumentsHaveClass.apply(self, [arguments]),
-      newContext = {}
-    transform = function(resolve, reject, result, err) {
-      if (err) {
-        reject(err)
-      } else if (argsHaveClass.classObject && args.length) {
-        am.ExtendedPromise._applyResultToClass(argsHaveClass, args).next(newedClass => {
-          self._state_.class = newedClass
+      newContext = {},
+      transform = function(resolve, reject, result, err) {
+        if (err) {
+          reject(err)
+        } else if (argsHaveClass.classObject && args.length) {
+          am.ExtendedPromise._applyResultToClass(argsHaveClass, args).next(newedClass => {
+            self._state_.class = newedClass
+            resolve(self)
+          })
+        } else if (argsHaveClass.classObject || argsHaveClass.classFn) {
+          self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
           resolve(self)
-        })
-      } else if (argsHaveClass.classObject || argsHaveClass.classFn) {
-        self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
-        resolve(self)
+        }
       }
-    }
     for (var attr in self._state_) {
       newContext[attr] = self._state_[attr]
     }
