@@ -662,7 +662,6 @@ class ExtendedPromise extends Promise {
         wrappedNewResult = am(
           new (Function.prototype.bind.apply(argsHaveClass.classFn, [{}].concat(args)))()
         ).next(function(newResult) {
-         
           if (typeof newResult === 'function') {
             return am.fn(newResult)
           } else {
