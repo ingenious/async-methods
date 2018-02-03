@@ -62,10 +62,10 @@ class ExtendedPromise extends Promise {
             args = argsHaveClass.args.concat([result])
           }
           try {
-            newResult = am.ExtendedPromise._applyResultToClass(argsHaveClass, args)
+            newResult = ExtendedPromise._applyResultToClass(argsHaveClass, args)
 
-            // in case newResult is Promise
-            am(newResult)
+              // in case newResult is Promise
+              //am(newResult)
               .next(resolve)
               .catch(reject)
           } catch (e) {
@@ -620,8 +620,10 @@ class ExtendedPromise extends Promise {
     let wrappedNewResult,
       newedClass,
       self = this
+
     if (argsHaveClass.classFn && argsHaveClass.methodName) {
       // class with specified method (new first)
+
       try {
         newedClass = new argsHaveClass.classFn()
         if (!newedClass[argsHaveClass.methodName]) {
@@ -629,7 +631,7 @@ class ExtendedPromise extends Promise {
             argsHaveClass.methodName + ' is not a methodName of the specified Class'
           )
         } else {
-          wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(self, args))
+          wrappedNewResult = am(newedClass[argsHaveClass.methodName].apply(newedClass, args))
         }
       } catch (e) {
         wrappedNewResult = am.reject(e)
@@ -660,6 +662,7 @@ class ExtendedPromise extends Promise {
         wrappedNewResult = am(
           new (Function.prototype.bind.apply(argsHaveClass.classFn, [{}].concat(args)))()
         ).next(function(newResult) {
+         
           if (typeof newResult === 'function') {
             return am.fn(newResult)
           } else {
@@ -676,10 +679,16 @@ class ExtendedPromise extends Promise {
     let self = this,
       argsHaveClass = am.argumentsHaveClass.apply(self, [arguments])
 
-    if (argsHaveClass.classObject || argsHaveClass.classFn) {
+    if (argsHaveClass.args && argsHaveClass.args.length && argsHaveClass.classFn) {
+      // if arguments for class provided then new class with arguments
+      self._state_.class = new (Function.prototype.bind.apply(
+        argsHaveClass.classFn,
+        [self || {}].concat(argsHaveClass.args)
+      ))()
+    } else if (argsHaveClass.classObject || argsHaveClass.classFn) {
+      // set stored class to provided class or newed class
       self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
     }
-
     return self
   }
   clearClass() {
