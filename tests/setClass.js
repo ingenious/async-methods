@@ -61,9 +61,7 @@ describe('setClass()', function() {
         })
         .next('test24')
         .next(r => {
-          assert.ok(
-            chain._state_ && chain._state_.class && typeof chain._state_.class === 'function'
-          )
+          assert.ok(chain._state_ && chain._state_.class && typeof chain._state_.class === 'object')
           assert.equal(r, 457)
           done()
         })

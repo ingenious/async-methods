@@ -684,9 +684,12 @@ class ExtendedPromise extends Promise {
         argsHaveClass.classFn,
         [self || {}].concat(argsHaveClass.args)
       ))()
-    } else if (argsHaveClass.classObject || argsHaveClass.classFn) {
-      // set stored class to provided class or newed class
-      self._state_.class = argsHaveClass.classObject || argsHaveClass.classFn
+    } else if (argsHaveClass.classFn) {
+      // set stored class to provided class (newed)
+      self._state_.class = new argsHaveClass.classFn()
+    } else if (argsHaveClass.classObject) {
+      // set stored class to provided class
+      self._state_.class = argsHaveClass.classObject
     }
     return self
   }
@@ -1039,7 +1042,7 @@ am.argumentsHaveClass = function(argsIn) {
   }
 
   // if am().setClass(classReference) has been called
-  // use self._state_.class as class when first argument is a string
+  // use self._state_.class as reference class when first argument is a string
   if (self && self._state_ && self._state_.class && methodName) {
     if (
       typeof self._state_.class === 'object' &&
@@ -1048,7 +1051,11 @@ am.argumentsHaveClass = function(argsIn) {
     ) {
       classObject = self._state_.class
     }
-    if (typeof self._state_.class === 'function' && am.isClass(self._state_.class)) {
+    if (
+      typeof self._state_.class === 'function' &&
+      am.isClass(self._state_.class) &&
+      new self._state_.class()[methodName]
+    ) {
       classFn = self._state_.class
     }
   }
