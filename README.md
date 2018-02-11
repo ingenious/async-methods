@@ -1,14 +1,14 @@
 # async-methods (am)
 
 > * Aids developer productivity by producing async processes within applications that are robust and with clear logic 
-
+>
 > * Eliminates indenting from complex async handlers making them easier to read and maintain
-
+>
+> * Supports **async functions /await**, **generators /yield** and classes for async operations
+>
+> * Extensible.  can add additional *Extended Promise* methods
+>
 > * am.js is one file with no dependencies, 235 unit and functional tests covering all use cases
-
-> * Supports **async functions /await**, **generators /yield* and classes for async operations
-
-> * Extensible.  easily add additional *Extended Promise* methods
 
 Gitter now available for questions/support/suggestions on **async-methods** [gitter](https://gitter.im/ingenio-us-npm-packages/Lobby)
 
