@@ -1301,7 +1301,6 @@ am.forEach = function(initial, tolerant) {
               response[keys[index]] = result
             }
             if (index < keys.length - 1) {
-              console.log(list[keys[index + 1]], keys[index])
               return iterate(am(list[keys[++index]], keys[index]), index)
             } else {
               return am.resolve(response)
@@ -1563,7 +1562,7 @@ am.extend = function(extensionPackageList) {
 
       am._extend(amVersion.ExtendedPromise)
     } catch (e) {
-      console.log(1397, 'Problem extending am with ', extensionPackage, e)
+      console.log('Problem extending am with ', extensionPackage, e)
     }
   })
   return am
