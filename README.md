@@ -91,7 +91,7 @@ In package.json
 
 ```javascript
                                                                                                                                                                                                    
-	"async-methods":"^0.2.15"
+	"async-methods":"^1.0.1"
 	
 ```
 
@@ -138,6 +138,32 @@ or
 at the end of the chain (see examples below).  That way errors will be trapped and not cause exceptions
 	
 ## Wrapping
+
+### Wrap async function
+
+#### am(async fn)  
+
+Creates *ExtendedPromise* 
+
+
+```javascript
+                                                                                      
+    
+     am(async function(arg) {
+       return await Promise.resolve({ a: 23864-arg })
+     },4) // any extra arguments are applied to function
+    .then(r => {
+      console.log(r) //  { a: 23860 })
+   
+    })
+    .error(err => {
+       //handle error at end of chain
+       console.log(err)
+   
+      })
+    
+  
+```
 
 ### Wrap ES6 Class with methods
 
@@ -255,31 +281,7 @@ Create *ExtendedPromise* that returns an array.
   
 ```
 
-### Wrap async function
 
-#### am(async fn)  
-
-Creates *ExtendedPromise* 
-
-
-```javascript
-                                                                                      
-    
-     am(async function(arg) {
-       return await Promise.resolve({ a: 23864-arg })
-     },4) // any extra arguments are applied to function
-    .then(r => {
-      console.log(r) //  { a: 23860 })
-   
-    })
-    .error(err => {
-       //handle error at end of chain
-       console.log(err)
-   
-      })
-    
-  
-```
 
 ##### Evaluate arrays and objects of async functions (or other types of asynchronous oeprations)
 
