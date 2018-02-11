@@ -4,7 +4,7 @@
 >
 > * Eliminates indenting from complex async handlers making them easier to read and maintain
 >
-> * Supports **async functions /await**, **generators /yield** and classes for async operations
+> * Supports **async functions /await**, **generators /yield** and **ES6 classes** for async operations
 >
 > * Extensible.  can add additional *Extended Promise* methods
 >
