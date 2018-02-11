@@ -1882,7 +1882,7 @@ let ep = am.waterfall([
 
 ```
 
-####am.waterfall with object of async functions (cumulative result object passed to each stage)
+#### am.waterfall with object of async functions (cumulative result object passed to each stage)
 
 ```javascript
                                                                              
@@ -1909,7 +1909,7 @@ let ep = am.waterfall([
             
       })
 
-####am.waterfall with object of functions with callbacks and handling of stage errors
+#### am.waterfall with object of functions with callbacks and handling of stage errors
 
 ```javascript
                                                                                       
@@ -2092,7 +2092,7 @@ These methods have same functionality as their Promise equivalents but return a 
 ```
 
 
-####am.all with array of functions with callbacks and handling of rejection in stage
+#### am.all with array of functions with callbacks and handling of rejection in stage
 
 ```javascript
                                                                                       
