@@ -81,7 +81,7 @@ In package.json
 ```javascript
                                                                                       
                                                                                                                              
-	"async-methods":"^1.2.1"
+	"async-methods":"^1.0.1"
 	
 ```
 
