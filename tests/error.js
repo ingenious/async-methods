@@ -21,6 +21,25 @@ describe('.error()', function() {
       )
     })
   })
+  describe('Async Function', function() {
+    it('should return extended promise resolving to returned value', function(done) {
+      let ep = am.reject({ error: 67 }).error(async function(err) {
+        return await { a: 2 }
+      })
+      assert.ok(ep instanceof am.ExtendedPromise)
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, { a: 2 })
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
   describe('Synchronous with Class', function() {
     it('should return extended promise resolving to returned value', function(done) {
       let ep = am.reject({ error: 67 }).error(
@@ -62,6 +81,25 @@ describe('.error()', function() {
       )
     })
   })
+  describe('Async Function  - no returned value from function', function() {
+    it('should return extended promise resolving to undefined', function(done) {
+      let ep = am.reject({ error: 56 }).error(async function(err) {
+        await 67
+      })
+      assert.ok(ep instanceof am.ExtendedPromise)
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, undefined)
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
   describe('Generator (Asynchronous) - no returned value from generator', function() {
     it('should return extended promise resolving to undefined', function(done) {
       let ep = am.reject({ error: 56 }).error(function*(err) {
@@ -81,7 +119,7 @@ describe('.error()', function() {
     })
   })
 
-  describe('Class (Synchronous/Asynchronous) - no returned value from generator', function() {
+  describe('Class (Synchronous/Asynchronous) - no returned value ', function() {
     it('should return extended promise resolving to undefined', function(done) {
       let ep = am.reject({ error: 56 }).error(
         'syncMethod',

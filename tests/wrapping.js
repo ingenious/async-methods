@@ -62,6 +62,21 @@ describe('Wrapping', function() {
         })
         .catch(done)
     })
+
+    it('should allow async function to be yielded in wrapped generator', function(done) {
+      am(async function() {
+        return await Promise.resolve({ a: 23864 })
+      })
+        .then(r => {
+          assert.deepStrictEqual(r, { a: 23864 })
+          done()
+        })
+        .catch(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
+    })
+
     it('should allow function with callback to be yielded in wrapped generator', function(done) {
       am(function*(a, b) {
         return yield function(cb) {

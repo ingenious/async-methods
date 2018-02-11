@@ -33,7 +33,12 @@ class ExtendedPromise extends Promise {
         reject(err)
       } else {
         // synchronous step
-        if (!argsHaveClass && typeof fn === 'function' && !am.isGenerator(fn)) {
+        if (
+          !argsHaveClass &&
+          typeof fn === 'function' &&
+          !am.isAsyncFunction(fn) &&
+          !am.isGenerator(fn)
+        ) {
           let newResult = fn.apply(self, [result])
 
           // if function doesnt return passs through
@@ -42,7 +47,7 @@ class ExtendedPromise extends Promise {
           } else {
             resolve(newResult)
           }
-        } else if (am.isGenerator(fn)) {
+        } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
           // generator - asunchronous step
           am(fn.apply(self, [result]))
             .next(function(newResult) {
@@ -136,7 +141,12 @@ class ExtendedPromise extends Promise {
         applyResultToClass(argsHaveClass, args)
           .next(resolve)
           .catch(reject)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isObject(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isObject(result)
+      ) {
         // 1. object applied to function (synchronous)
         mapped = {}
         for (attr in result) {
@@ -152,7 +162,12 @@ class ExtendedPromise extends Promise {
           }
         }
         resolve(mapped)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isArray(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isArray(result)
+      ) {
         // 2. array applied to  function
         mapped = []
         for (i = 0; i < result.length; i++) {
@@ -168,7 +183,7 @@ class ExtendedPromise extends Promise {
           }
         }
         resolve(mapped)
-      } else if (!argsHaveClass && !am.isGenerator(fn)) {
+      } else if (!argsHaveClass && !am.isGenerator(fn) && !am.isAsyncFunction(fn)) {
         // 3. non-array/object applied to function
         try {
           newResult = fn.apply(self, [result, 0, [result]])
@@ -180,7 +195,7 @@ class ExtendedPromise extends Promise {
         mapped = newResult || null
         resolve(mapped)
       } else if (
-        (argsHaveClass || am.isGenerator(fn)) &&
+        (argsHaveClass || am.isGenerator(fn) || am.isAsyncFunction(fn)) &&
         (am.isArray(result) || am.isObject(result))
       ) {
         // 4,5. object or array applied to generator or class
@@ -194,7 +209,7 @@ class ExtendedPromise extends Promise {
         } else {
           resolve(result)
         }
-      } else if (am.isGenerator(fn)) {
+      } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
         mapped = fn.apply(self, [result, 0, [result]])
 
         // 6. non-array/generator applied to generator
@@ -232,7 +247,12 @@ class ExtendedPromise extends Promise {
             resolve(newResult ? result : null)
           })
           .error(reject)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isObject(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isObject(result)
+      ) {
         // 1. object in (synchronous)
         mapped = {}
         for (attr in result) {
@@ -248,7 +268,12 @@ class ExtendedPromise extends Promise {
           }
         }
         resolve(mapped)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isArray(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isArray(result)
+      ) {
         // 2. array in (synchronous)
         mapped = []
         for (i = 0; i < result.length; i++) {
@@ -264,7 +289,7 @@ class ExtendedPromise extends Promise {
           }
         }
         resolve(mapped)
-      } else if (!argsHaveClass && !am.isGenerator(fn)) {
+      } else if (!argsHaveClass && !am.isAsyncFunction(fn) && !am.isGenerator(fn)) {
         // 3. non array/object in gnerator (synchronous)
         try {
           newResult = fn.apply(self, [result, 0, [result]])
@@ -276,7 +301,7 @@ class ExtendedPromise extends Promise {
         mapped = newResult ? result : null
         resolve(mapped)
       } else if (
-        (am.isGenerator(fn) || argsHaveClass) &&
+        (am.isAsyncFunction(fn) || am.isGenerator(fn) || argsHaveClass) &&
         (am.isArray(result) || am.isObject(result))
       ) {
         // 4,5. object or array in generator (asynchronous) or class (synchronous/asynchronous)
@@ -287,7 +312,7 @@ class ExtendedPromise extends Promise {
             resolve(newResult)
           })
           .error(reject)
-      } else if (am.isGenerator(fn)) {
+      } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
         mapped = fn.apply(self, [result, 0, [result]])
 
         // 6. other in (asynchronous)
@@ -326,27 +351,40 @@ class ExtendedPromise extends Promise {
       let attr, i, mapped
       if (err) {
         reject(err)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isObject(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isObject(result)
+      ) {
         // 1. object in (synchronous)
         mapped = {}
         for (attr in result) {
           mapped[attr] = fn.apply(self, [result[attr], attr, result])
         }
         resolve(result)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isArray(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isArray(result)
+      ) {
         // 2. array in (synchronous)
         mapped = []
         for (i = 0; i < result.length; i++) {
           mapped[i] = fn.apply(self, [result[i], i, result])
         }
         resolve(result)
-      } else if (!argsHaveClass && !am.isGenerator(fn)) {
+      } else if (!argsHaveClass && !am.isAsyncFunction(fn) && !am.isGenerator(fn)) {
         // 3. other in (synchronous)
         mapped = am(fn.apply(self, [result, 0, [result]]))
         am(result)
           .next(resolve)
           .error(reject)
-      } else if ((argsHaveClass || am.isGenerator(fn)) && am.isObject(result)) {
+      } else if (
+        (argsHaveClass || am.isAsyncFunction(fn) || am.isGenerator(fn)) &&
+        am.isObject(result)
+      ) {
         // 4. object in (asynchronous)
         mapped = {}
         for (attr in result) {
@@ -360,7 +398,10 @@ class ExtendedPromise extends Promise {
             resolve(result)
           })
           .error(reject)
-      } else if ((argsHaveClass || am.isGenerator(fn)) && am.isArray(result)) {
+      } else if (
+        (argsHaveClass || am.isAsyncFunction(fn) || am.isGenerator(fn)) &&
+        am.isArray(result)
+      ) {
         // 5. array in (asynchronous)
         mapped = []
         for (i = 0; i < result.length; i++) {
@@ -374,7 +415,7 @@ class ExtendedPromise extends Promise {
             resolve(result)
           })
           .error(reject)
-      } else if (am.isGenerator(fn)) {
+      } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
         mapped = am(fn.apply(self, [result, 0, [result]]))
         // 6. other in (asynchronous)
         // am
@@ -411,27 +452,40 @@ class ExtendedPromise extends Promise {
       let attr, i, mapped
       if (err) {
         reject(err)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isObject(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isObject(result)
+      ) {
         // 1. object in (synchronous)
         mapped = {}
         for (attr in result) {
           mapped[attr] = fn.apply(self, [result[attr], attr, result])
         }
         resolve(mapped)
-      } else if (!argsHaveClass && !am.isGenerator(fn) && am.isArray(result)) {
+      } else if (
+        !argsHaveClass &&
+        !am.isAsyncFunction(fn) &&
+        !am.isGenerator(fn) &&
+        am.isArray(result)
+      ) {
         // 2. array in (synchronous)
         mapped = []
         for (i = 0; i < result.length; i++) {
           mapped[i] = fn.apply(self, [result[i], i, result])
         }
         resolve(mapped)
-      } else if (!argsHaveClass && !am.isGenerator(fn)) {
+      } else if (!argsHaveClass && !am.isAsyncFunction(fn) && !am.isGenerator(fn)) {
         // 3. other in (synchronous)
         mapped = fn.apply(self, [result, 0, [result]])
         am(mapped)
           .next(resolve)
           .error(reject)
-      } else if ((argsHaveClass || am.isGenerator(fn)) && am.isObject(result)) {
+      } else if (
+        (argsHaveClass || am.isAsyncFunction(fn) || am.isGenerator(fn)) &&
+        am.isObject(result)
+      ) {
         // 4. object in (asynchronous)
         mapped = {}
         for (attr in result) {
@@ -449,7 +503,10 @@ class ExtendedPromise extends Promise {
             resolve(newResult)
           })
           .error(reject)
-      } else if ((argsHaveClass || am.isGenerator(fn)) && am.isArray(result)) {
+      } else if (
+        (argsHaveClass || am.isAsyncFunction(fn) || am.isGenerator(fn)) &&
+        am.isArray(result)
+      ) {
         // 5. array applied to generator  (asynchronous) or Class
         mapped = []
         for (i = 0; i < result.length; i++) {
@@ -467,7 +524,7 @@ class ExtendedPromise extends Promise {
             resolve(newResult)
           })
           .error(reject)
-      } else if (am.isGenerator(fn)) {
+      } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
         // 6. non object/array applied to generator (asynchronous)
         try {
           mapped = fn.apply(self, [result, 0, [result]])
@@ -550,7 +607,7 @@ class ExtendedPromise extends Promise {
     return ExtendedPromise._chain(self, newContext)(function(resolve, reject, result, err) {
       let newResult
       if (err) {
-        if (typeof fn === 'function' && !am.isGenerator(fn)) {
+        if (typeof fn === 'function' && !am.isAsyncFunction(fn) && !am.isGenerator(fn)) {
           newResult = fn(err)
           if (newResult === undefined) {
             // pass through if nothing returned
@@ -558,7 +615,7 @@ class ExtendedPromise extends Promise {
           } else {
             resolve(newResult)
           }
-        } else if (am.isGenerator(fn)) {
+        } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
           am(fn(err))
             .next(function(newResult) {
               // pass through if nothing returned
@@ -735,7 +792,7 @@ class ExtendedPromise extends Promise {
             } catch (e) {
               reject(e)
             }
-          } else if (am.isGenerator(fn)) {
+          } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
             // generator - asynchronous step
             am(fn.apply(self, args))
               .next(function(newResult) {
@@ -815,7 +872,7 @@ class ExtendedPromise extends Promise {
             } catch (e) {
               reject(e)
             }
-          } else if (am.isGenerator(fn)) {
+          } else if (am.isGenerator(fn) || am.isAsyncFunction(fn)) {
             // generator - asynchronous step
             am(fn.apply(self, args))
               .next(function(newResult) {
@@ -879,6 +936,11 @@ am = function(initial) {
         initial.then(resolve).catch(reject)
       })
     }
+  }
+  if (am.isAsyncFunction(initial)) {
+    return am(initial.apply(self, args)).next(function(result) {
+      return am.all(result)
+    })
   }
   if (am.isGenerator(initial) || am.isNextable(initial)) {
     //
@@ -998,6 +1060,14 @@ am.isGenerator = function() {
     arguments[0] &&
     arguments[0].constructor &&
     arguments[0].constructor.name === 'GeneratorFunction'
+  )
+}
+am.isAsyncFunction = function() {
+  return (
+    arguments[0] &&
+    arguments[0].constructor &&
+    arguments[0].constructor.name &&
+    arguments[0].constructor.name === 'AsyncFunction'
   )
 }
 am.isNextable = function() {
@@ -1231,6 +1301,7 @@ am.forEach = function(initial, tolerant) {
               response[keys[index]] = result
             }
             if (index < keys.length - 1) {
+              console.log(list[keys[index + 1]], keys[index])
               return iterate(am(list[keys[++index]], keys[index]), index)
             } else {
               return am.resolve(response)
@@ -1376,7 +1447,24 @@ am.waterfall = function(initial) {
       if (index < keys.length) {
         return promise
           .next(function(result) {
-            response[keys[index]] = result
+            let i, attr, cloned
+
+            if (am.isArray(initial)) {
+              cloned = []
+              for (i = 0; i < response.length; i++) {
+                cloned.push(response[i])
+              }
+              cloned[keys[index]] = result
+              response = cloned
+            } else {
+              cloned = {}
+              for (attr in response) {
+                cloned[attr] = response[attr]
+              }
+              cloned[keys[index]] = result
+              response = cloned
+            }
+
             if (index < keys.length - 1) {
               ++index
               if (typeof list[keys[index]] === 'function') {
@@ -1425,14 +1513,21 @@ am.waterfall = function(initial) {
 
 am.fn = function(fn) {
   let self = this,
-    args = []
+    args = [],
+    result
   for (var i = 1; i < arguments.length; i++) {
     args.push(arguments[i])
   }
-  if (typeof fn === 'function') {
-    return am(fn.apply(self, args))
+
+  if (typeof fn === 'function' && !am.isAsyncFunction(fn) && !am.isGenerator(fn)) {
+    try {
+      result = fn.apply(self, args)
+      return am.resolve(result)
+    } catch (e) {
+      return am.reject(e)
+    }
   } else {
-    return am(fn)
+    return am.apply(self, arguments)
   }
 }
 

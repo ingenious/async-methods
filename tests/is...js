@@ -13,6 +13,17 @@ describe('static is... methods', () => {
       done()
     })
   })
+  describe('isAsyncFunction()', () => {
+    it('should  return true or false', done => {
+      let test = am.isAsyncFunction(() => {})
+      assert.deepStrictEqual(test, false)
+      test = am.isAsyncFunction(async function() {
+        await Promise.resolve()
+      })
+      assert.deepStrictEqual(test, true)
+      done()
+    })
+  })
   describe('isPromise()', () => {
     it('should  return true or false', done => {
       let test = am.isPromise([234, 567])

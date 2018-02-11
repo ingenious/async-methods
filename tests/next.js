@@ -57,6 +57,24 @@ describe('.next()', function() {
       )
     })
   })
+  describe('Async function - no returned value', function() {
+    it('should return extended promise resolving to original value', function(done) {
+      assert.ok(
+        am([5, 6, 7])
+          .next(async function(items) {
+            await Promise.resolve({ a: 56 })
+          })
+          .then(r => {
+            assert.deepStrictEqual(r, [5, 6, 7])
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
   describe('If Argument other than a function or generator', function() {
     it('passes through original resolved value', function(done) {
       assert.ok(

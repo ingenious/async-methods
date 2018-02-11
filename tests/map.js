@@ -38,6 +38,24 @@ describe('.map()', function() {
       )
     })
   })
+  describe('Array applied to  async function', function() {
+    it('should return promise resolving to array of asynchronously \n        returned values in map async function', function(done) {
+      assert.ok(
+        am([5, 6, 7])
+          .map(async function(item) {
+            return await Promise.resolve(item / 2)
+          })
+          .then(r => {
+            assert.deepStrictEqual(r, [2.5, 3, 3.5])
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
   describe('Array applied to generator (asynchronous)', function() {
     it('should return promise resolving to array of asynchronously \n        returned values in map generator function', function(done) {
       assert.ok(
@@ -164,7 +182,25 @@ describe('.map()', function() {
       )
     })
   })
-  describe('Object asynchronous', function() {
+  describe('Object async function', function() {
+    it('should return promise resolving to object with asynchronously \n        returned values in map generator function', function(done) {
+      assert.ok(
+        am({ a: 123, b: 45 })
+          .map(async function(value, attr) {
+            return await Promise.resolve(value / 2)
+          })
+          .then(r => {
+            assert.deepStrictEqual(r, { a: 61.5, b: 22.5 })
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('Object asynchronous generator', function() {
     it('should return promise resolving to object with asynchronously \n        returned values in map generator function', function(done) {
       assert.ok(
         am({ a: 123, b: 45 })

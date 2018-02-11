@@ -135,6 +135,65 @@ describe('.forEach()', () => {
       )
     })
   })
+  describe('Array applied to async function', () => {
+    it('should return extended promise resolving to array of asynchronously \n        returned values in forEach async function', function(done) {
+      let ep = am([34, 56, 78]).forEach(async function(value, i, array) {
+        assert.deepStrictEqual(array, [34, 56, 78])
+        switch (i) {
+          case 0:
+            assert.equal(value, 34)
+            break
+          case 1:
+            assert.equal(value, 56)
+            break
+          case 2:
+            assert.equal(value, 78)
+            break
+        }
+        return await am.resolve(2 * value)
+      })
+      assert.ok(ep instanceof am.ExtendedPromise)
+
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, [34, 56, 78])
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('non-Array/Object applied to async function', () => {
+    it('should return extended promise resolving to array of asynchronously \n        returned values in forEach async function', function(done) {
+      let ep = am('test').forEach(async function(value, i, array) {
+        assert.deepStrictEqual(await array, ['test'])
+        assert.equal(await i, 0)
+        switch (i) {
+          case 0:
+            assert.equal(value, 'test')
+            break
+        }
+        return await am.resolve(value + 'a')
+      })
+      assert.ok(ep instanceof am.ExtendedPromise)
+
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, 'test')
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
   describe('non-Array/Object applied to Generator (asynchronous)', () => {
     it('should return extended promise resolving to array of asynchronously \n        returned values in forEach generator function', function(done) {
       let ep = am('test').forEach(function*(value, i, array) {
@@ -216,6 +275,34 @@ describe('.forEach()', () => {
       let ep = am({ a: 123, b: 45 }).forEach(function*(value, attr, object) {
         assert.deepStrictEqual(object, { a: 123, b: 45 })
         let result = yield Promise.resolve(value / 2)
+        switch (attr) {
+          case 'a':
+            assert.equal(result, 61.5)
+            break
+          case 'b':
+            assert.equal(result, 22.5)
+            break
+        }
+      })
+      assert.ok(ep instanceof am.ExtendedPromise)
+      assert.ok(
+        ep
+          .then(r => {
+            assert.deepStrictEqual(r, { a: 123, b: 45 })
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('Object applied to async function', () => {
+    it('should return extended promise resolving to object with asynchronously \n        returned values in map generator function', function(done) {
+      let ep = am({ a: 123, b: 45 }).forEach(async function(value, attr, object) {
+        assert.deepStrictEqual(object, { a: 123, b: 45 })
+        let result = await Promise.resolve(value / 2)
         switch (attr) {
           case 'a':
             assert.equal(result, 61.5)

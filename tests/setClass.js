@@ -92,7 +92,9 @@ describe('setClass()', function() {
         .catch(done)
     })
     it('should give precendence to class argument in method call but retain the reference to set Class', function(done) {
-      let chain = am([123, 456]).setClass(new testClass(456))
+      let chain = am([123, 456])
+        //
+        .setClass(new testClass(456))
 
       chain
         .map('mapValues')
@@ -119,7 +121,9 @@ describe('setClass()', function() {
   })
   describe('.clearClass() clears a reference Class for a chain', function() {
     it('should return extended promise resolving to original resolved value and remove set _state_.class', function(done) {
-      let chain = am([123, 456]).setClass(testClass, 456)
+      let chain = am([123, 456])
+        //
+        .setClass(testClass, 456)
 
       chain
         .map('mapValues')

@@ -81,6 +81,30 @@ describe('.threePrev()', function() {
       )
     })
   })
+  describe('async function  - no returned value ', function() {
+    it('should return extended promise resolving to original value', function(done) {
+      am([5, 6, 7])
+        .next(async function(items) {
+          return await Promise.resolve({ a: 56 })
+        })
+        .next(async function(items) {
+          return await Promise.resolve({ b: 6 })
+        })
+        .threePrev(async function(r, p, f) {
+          assert.deepStrictEqual(r, { b: 6 })
+          assert.deepStrictEqual(p, { a: 56 })
+          assert.deepStrictEqual(f, [5, 6, 7])
+        })
+        .next(r => {
+          assert.deepStrictEqual(r, [{ b: 6 }, { a: 56 }, [5, 6, 7]])
+          done()
+        })
+        .catch(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
+    })
+  })
   describe('If Argument other than a function or generator', function() {
     it('passes through original resolved value', function(done) {
       am([5, 6, 7])
@@ -263,6 +287,25 @@ describe('.threePrev()', function() {
           .threePrev(function*(items) {
             throw { error: 57 }
             return yield Promise.resolve(item / 2)
+          })
+          .then(r => {
+            assert.fail()
+          })
+          .error(function(err) {
+            assert.deepStrictEqual(err, { error: 57 })
+            done()
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('Error handling - error passed to catch', function() {
+    it('should reject ', done => {
+      assert.ok(
+        am([5, 6, 7])
+          .threePrev(async function(items) {
+            throw { error: 57 }
+            return await Promise.resolve(item / 2)
           })
           .then(r => {
             assert.fail()

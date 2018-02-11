@@ -69,6 +69,29 @@ describe('.twoPrev()', function() {
         .catch(done)
     })
   })
+  describe('async function- no returned value ', function() {
+    it('should return extended promise resolving to array of previous 2 results', function(done) {
+      let ep = am([5, 6, 7])
+        .next(async function(item) {
+          return await { second: 897 }
+        })
+        .twoPrev(async function(result, prev) {
+          assert.deepStrictEqual(result, { second: 897 })
+          assert.deepStrictEqual(prev, [5, 6, 7])
+        })
+      assert.ok(ep instanceof am.ExtendedPromise)
+
+      ep
+        .then(r => {
+          assert.deepStrictEqual(r, [{ second: 897 }, [5, 6, 7]])
+          done()
+        })
+        .error(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
+    })
+  })
   describe('If Argument other than a class, function or generator', function() {
     it('passes through array of previous 2 results', function(done) {
       assert.ok(
@@ -256,5 +279,22 @@ describe('.twoPrev()', function() {
         })
         .catch(done)
     })
+  })
+})
+describe('Error handling - error passed to catch', function() {
+  it('should reject ', done => {
+    am([5, 6, 7])
+      .twoPrev(async function(items) {
+        throw { error: 57 }
+        return await Promise.resolve(item / 2)
+      })
+      .then(r => {
+        assert.fail()
+      })
+      .error(function(err) {
+        assert.deepStrictEqual(err, { error: 57 })
+        done()
+      })
+      .catch(done)
   })
 })

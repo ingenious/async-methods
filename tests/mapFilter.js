@@ -40,6 +40,25 @@ describe('.mapFilter()', () => {
       )
     })
   })
+  describe('Array async function', () => {
+    it('should return  extended promise resolving to filtered array of asynchronously \n        returned values in map async function', function(done) {
+      let filtered = am([5, 6, 7]).mapFilter(async function(item) {
+        return item > 5 ? await Promise.resolve(item / 2) : false
+      })
+      assert.ok(filtered instanceof am.ExtendedPromise)
+      assert.ok(
+        filtered
+          .then(r => {
+            assert.deepStrictEqual(r, [3, 3.5])
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
   describe('Array asynchronous', () => {
     it('should return  extended promise resolving to filtered array of asynchronously \n        returned values in map generator function', function(done) {
       let filtered = am([5, 6, 7]).mapFilter(function*(item) {
@@ -63,6 +82,25 @@ describe('.mapFilter()', () => {
     it('should return  extended promise resolving to filtered array of asynchronously \n        returned values in map generator function', function(done) {
       let filtered = am(444).mapFilter(function*(item) {
         return item > 5 ? yield Promise.resolve(item / 2) : false
+      })
+      assert.ok(filtered instanceof am.ExtendedPromise)
+      assert.ok(
+        filtered
+          .then(r => {
+            assert.deepStrictEqual(r, 222)
+            done()
+          })
+          .catch(err => {
+            assert.fail('Promise rejected', err)
+          })
+          .catch(done) instanceof Promise
+      )
+    })
+  })
+  describe('apply non-Array/Object to async function', () => {
+    it('should return  extended promise resolving to filtered array of asynchronously \n        returned values in map async function', function(done) {
+      let filtered = am(444).mapFilter(async function(item) {
+        return item > 5 ? await Promise.resolve(item / 2) : false
       })
       assert.ok(filtered instanceof am.ExtendedPromise)
       assert.ok(
@@ -153,6 +191,26 @@ describe('.mapFilter()', () => {
         .catch(done)
     })
   })
+  describe('Error handling - error passed to catch', () => {
+    it('should reject ', done => {
+      am([5, 6, 7])
+        .mapFilter(async function(item, i) {
+          if (item === 6) {
+            throw { error: 57 }
+          }
+          return await Promise.resolve(item / 2)
+        })
+        .then(r => {
+          console.log(57, r)
+          assert.fail()
+        })
+        .catch(function(err) {
+          assert.deepStrictEqual(err, { error: 57 })
+          done()
+        })
+        .catch(done)
+    })
+  })
 
   describe('Error handling - use of tolerant attribute with array', () => {
     it('should resolve with null item values', done => {
@@ -162,6 +220,25 @@ describe('.mapFilter()', () => {
             throw { error: 57 }
           }
           return yield Promise.resolve(item / 2)
+        }, true)
+        .then(r => {
+          assert.deepStrictEqual(r, [2.5])
+          done()
+        })
+        .catch(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
+    })
+  })
+  describe('Error handling - use of tolerant attribute with array', () => {
+    it('should resolve with null item values', done => {
+      am([5, 6, 7])
+        .mapFilter(async function(item, i) {
+          if (i) {
+            throw { error: 57 }
+          }
+          return await Promise.resolve(item / 2)
         }, true)
         .then(r => {
           assert.deepStrictEqual(r, [2.5])
@@ -213,6 +290,22 @@ describe('.mapFilter()', () => {
       am({ a: 123, b: 45 })
         .mapFilter(function*(value, attr) {
           return attr === 'a' ? yield Promise.resolve(value / 2) : false
+        })
+        .then(r => {
+          assert.deepStrictEqual(r, { a: 61.5 })
+          done()
+        })
+        .catch(err => {
+          assert.fail('Promise rejected', err)
+        })
+        .catch(done)
+    })
+  })
+  describe('Object async function', () => {
+    it('should return extended promise resolving to object with asynchronously \n        returned values in map generator function', function(done) {
+      am({ a: 123, b: 45 })
+        .mapFilter(async function(value, attr) {
+          return attr === 'a' ? await Promise.resolve(value / 2) : false
         })
         .then(r => {
           assert.deepStrictEqual(r, { a: 61.5 })

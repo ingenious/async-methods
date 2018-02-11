@@ -1,5 +1,21 @@
 # Changes to package by version
 
+## version 1.0.0
+
+1. setClass() allows a reference class to be set for a sequence of steps using class methods in a promise chain
+
+2. clearClass() clears a reference class
+
+3. async functions can now be wrapped in same way as generators eg am(async function( .. ){ .. }) or am (async ( .. )=>{ .. })
+
+4.  async functions can now be used in .next(fn), .error(fn), .mapFilter(fn), .map(fn), .filter(fn), .forEach(fn), .twoPrev(fn) and .threePrev(fn).  The await keyword can be used similarly to yield
+
+5.  Arrays and objects of async functions can be used in am.waterfall(), am.all()/am.parallel(), am.forEach()
+
+### Fixes
+
+Changed README docuemtnation for am.forEach(array || object) as previously incorrect
+
 ## version 0.2.15
 
 1. **am.extend(extensionPackageList)**

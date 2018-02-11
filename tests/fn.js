@@ -23,6 +23,28 @@ describe('static method am.fn()', function() {
       .catch(done)
   })
 })
+describe('static method am.fn()', function() {
+  it('should return extended promise resolving result of executing the function with any passed arguments', done => {
+    let ep = am.fn(
+      async (a, b) => {
+        return (await a) + b
+      },
+      345,
+      678
+    )
+    assert.ok(ep instanceof am.ExtendedPromise)
+
+    ep
+      .then(r => {
+        assert.deepStrictEqual(r, 1023)
+        done()
+      })
+      .catch(err => {
+        assert.fail('Promise rejected', err)
+      })
+      .catch(done)
+  })
+})
 
 describe('static method am.sfn()', function() {
   it('should return extended promise resolving result of executing a function with success and fail callbacks', done => {
